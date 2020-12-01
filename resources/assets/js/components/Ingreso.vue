@@ -118,7 +118,7 @@
                                     <label style="color:red">*</label>
                                     <select class="form-control" v-model="tipo_comprobante">
                                         <option value="0">Seleccione</option>
-                                        <option value="BOLETA">Boleta</option>
+                                        
                                         <option value="FACTURA">Factura</option>
                                         <option value="TICKET">Ticket</option>
                                     </select>
@@ -135,6 +135,14 @@
                                     <label>Número Comprobante</label>
                                     <label style="color:red">*</label>
                                     <input type="text" class="form-control" v-model="num_comprobante" placeholder="000xx">
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div v-show="errorIngreso" class="form-group row div-error">
+                                    <div class="text-center text-error">
+                                        <div v-for="error in errorMostrarMsjIngreso" :key="error" v-text="error"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -298,7 +306,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <button type="button" @click="agregarDetalleModal( articulo)" class="btn btn-success btn-sm" >
+                                                <button type="button" @click="agregarDetalleModal(articulo)" class="btn btn-success btn-sm" >
                                                 <i class="icon-check"></i>
                                                 </button>
                                                
@@ -530,7 +538,34 @@
                 
             },
             agregarDetalleModal(data = []){
+                let me = this;
 
+                if(me.encuentra(data['id'])){
+                        const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: 'btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                        })
+                        swalWithBootstrapButtons.fire({
+                            title: 'Error!',
+                            icon: 'error',
+                            text: 'Ese artículo ya se ha agregado',
+                          
+                            confirmButtonText: 'Aceptar',
+                          
+                            
+                        })
+                    }else{
+
+                        me.arrayDetalle.push({
+                            idarticulo: data['id'],
+                            articulo: data['nombre'],
+                            cantidad: 1,
+                            precio: 1
+                        });
+                    }    
             },
             listarArticulo (buscar,criterio){
 
@@ -545,70 +580,95 @@
                     console.log(error);
                 });
             },
-            // registrarPersona(){
-            //     if (this.validarPersona()){
-            //         return;
-            //     }
+            registrarIngreso(){
+                if (this.validarIngreso()){
+                    return;
+                }
                 
-            //     let me = this;
+                let me = this;
 
-            //     axios.post('/user/registrar',{
-            //         'nombre': this.nombre,
-            //         'tipo_documento': this.tipo_documento,
-            //         'num_documento' : this.num_documento,
-            //         'direccion' : this.direccion,
-            //         'telefono' : this.telefono,
-            //         'email' : this.email,
-            //         'idrol' : this.idrol,
-            //         'usuario': this.usuario,
-            //         'password': this.password
+                axios.post('/ingreso/registrar',{
+                    'idproveedor': this.idproveedor,
+                    'tipo_comprobante': this.tipo_comprobante,
+                    'serie_comprobante' : this.serie_comprobante,
+                    'num_comprobante' : this.num_comprobante,
+                    'impuesto' : this.impuesto,
+                    'total' : this.total,
+                    'data' : this.arrayDetalle
 
-            //     }).then(function (response) {
-            //         me.cerrarModal();
-            //         me.listarPersona(1,'','nombre');
-            //     }).catch(function (error) {
-            //         console.log(error);
-            //     });
-            // },
-            // actualizarPersona(){
-            //    if (this.validarPersona()){
-            //         return;
-            //     }
+                }).then(function (response) {
+                    me.listado=1;
+                    me.listarIngreso(1,'','num_comprobante');
+                    me.idproveedor=0;
+                    me.tipo_comprobante='Ticket';
+                    me.serie_comprobante='';
+                    me.num_comprobante='';
+                    me.impuesto=0.18;
+                    me.total=0.0;
+                    me.idarticulo=0;
+                    me.articulo='';
+                    me.cantidad=0;
+                    me.precio=0;
+                    me.arrayDetalle=[];
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            actualizarPersona(){
+               if (this.validarPersona()){
+                    return;
+                }
                 
-            //     let me = this;
+                let me = this;
 
-            //     axios.put('/user/actualizar',{
-            //         'nombre': this.nombre,
-            //         'tipo_documento': this.tipo_documento,
-            //         'num_documento' : this.num_documento,
-            //         'direccion' : this.direccion,
-            //         'telefono' : this.telefono,
-            //         'email' : this.email,
-            //         'idrol' : this.idrol,
-            //         'usuario': this.usuario,
-            //         'password': this.password,
-            //         'id': this.persona_id
-            //     }).then(function (response) {
-            //         me.cerrarModal();
-            //         me.listarPersona(1,'','nombre');
-            //     }).catch(function (error) {
-            //         console.log(error);
-            //     }); 
-            // },
-            // validarPersona(){
-            //     this.errorPersona=0;
-            //     this.errorMostrarMsjPersona =[];
+                axios.put('/user/actualizar',{
+                    'nombre': this.nombre,
+                    'tipo_documento': this.tipo_documento,
+                    'num_documento' : this.num_documento,
+                    'direccion' : this.direccion,
+                    'telefono' : this.telefono,
+                    'email' : this.email,
+                    'idrol' : this.idrol,
+                    'usuario': this.usuario,
+                    'password': this.password,
+                    'id': this.persona_id
+                }).then(function (response) {
+                    me.cerrarModal();
+                    me.listarPersona(1,'','nombre');
+                }).catch(function (error) {
+                    console.log(error);
+                }); 
+            },
+            validarIngreso(){
+                this.errorIngreso=0;
+                this.errorMostrarMsjIngreso =[];
 
-            //     if (!this.nombre) this.errorMostrarMsjPersona.push("El nombre de la pesona no puede estar vacío.");
-            //     if (!this.usuario) this.errorMostrarMsjPersona.push("El nombre de usuario no puede estar vacío.");
-            //     if (!this.password) this.errorMostrarMsjPersona.push("La password del usuario no puede estar vacía.");
-            //     if (this.idrol==0) this.errorMostrarMsjPersona.push("Seleccione una Role.");
-            //     if (this.errorMostrarMsjPersona.length) this.errorPersona = 1;
+                if(this.idproveedor==0) this.errorMostrarMsjIngreso.push("Seleccione un proveedor");
+                if(this.tipo_comprobante==0) this.errorMostrarMsjIngreso.push("Seleccione el comprobante");
+                if(this.num_comprobante==0) this.errorMostrarMsjIngreso.push("Seleccione el número de comprobante");
+                if(this.impuesto==0) this.errorMostrarMsjIngreso.push("Seleccione el impuesto de compra");
+                if(this.arrayDetalle.length<=0) this.errorMostrarMsjIngreso.push("Ingrese detalles de la compra");
 
-            //     return this.errorPersona;
-            // },
+                if (this.errorMostrarMsjIngreso.length) this.errorIngreso = 1;
+
+                return this.errorIngreso;
+            },
             mostrarDetalle(){
-                this.listado=0;
+                
+                let me = this;
+                me.listado=0;
+                me.idproveedor=0;
+                me.tipo_comprobante='Ticket';
+                me.serie_comprobante='';
+                me.num_comprobante='';
+                me.impuesto=0.18;
+                me.total=0.0;
+                me.idarticulo=0;
+                me.articulo='';
+                me.cantidad=0;
+                me.precio=0;
+                me.arrayDetalle=[];
             },
             ocultarDetalle(){
                 this.listado=1;
@@ -620,9 +680,9 @@
             },
             abrirModal(){
                 
-              
-                                this.modal = 1;
-                                this.tituloModal = 'Seleccione uno o varios artículos';
+                this.arrayArticulo=[];
+                this.modal = 1;
+                this.tituloModal = 'Seleccione uno o varios artículos';
                                
                              
             },

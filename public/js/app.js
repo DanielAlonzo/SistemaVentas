@@ -60653,6 +60653,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -60847,6 +60855,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         agregarDetalleModal: function agregarDetalleModal() {
             var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+            var me = this;
+
+            if (me.encuentra(data['id'])) {
+                var swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false
+                });
+                swalWithBootstrapButtons.fire({
+                    title: 'Error!',
+                    icon: 'error',
+                    text: 'Ese artículo ya se ha agregado',
+
+                    confirmButtonText: 'Aceptar'
+
+                });
+            } else {
+
+                me.arrayDetalle.push({
+                    idarticulo: data['id'],
+                    articulo: data['nombre'],
+                    cantidad: 1,
+                    precio: 1
+                });
+            }
         },
         listarArticulo: function listarArticulo(buscar, criterio) {
 
@@ -60859,71 +60895,94 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 console.log(error);
             });
         },
+        registrarIngreso: function registrarIngreso() {
+            if (this.validarIngreso()) {
+                return;
+            }
 
-        // registrarPersona(){
-        //     if (this.validarPersona()){
-        //         return;
-        //     }
+            var me = this;
 
-        //     let me = this;
+            axios.post('/ingreso/registrar', {
+                'idproveedor': this.idproveedor,
+                'tipo_comprobante': this.tipo_comprobante,
+                'serie_comprobante': this.serie_comprobante,
+                'num_comprobante': this.num_comprobante,
+                'impuesto': this.impuesto,
+                'total': this.total,
+                'data': this.arrayDetalle
 
-        //     axios.post('/user/registrar',{
-        //         'nombre': this.nombre,
-        //         'tipo_documento': this.tipo_documento,
-        //         'num_documento' : this.num_documento,
-        //         'direccion' : this.direccion,
-        //         'telefono' : this.telefono,
-        //         'email' : this.email,
-        //         'idrol' : this.idrol,
-        //         'usuario': this.usuario,
-        //         'password': this.password
+            }).then(function (response) {
+                me.listado = 1;
+                me.listarIngreso(1, '', 'num_comprobante');
+                me.idproveedor = 0;
+                me.tipo_comprobante = 'Ticket';
+                me.serie_comprobante = '';
+                me.num_comprobante = '';
+                me.impuesto = 0.18;
+                me.total = 0.0;
+                me.idarticulo = 0;
+                me.articulo = '';
+                me.cantidad = 0;
+                me.precio = 0;
+                me.arrayDetalle = [];
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        actualizarPersona: function actualizarPersona() {
+            if (this.validarPersona()) {
+                return;
+            }
 
-        //     }).then(function (response) {
-        //         me.cerrarModal();
-        //         me.listarPersona(1,'','nombre');
-        //     }).catch(function (error) {
-        //         console.log(error);
-        //     });
-        // },
-        // actualizarPersona(){
-        //    if (this.validarPersona()){
-        //         return;
-        //     }
+            var me = this;
 
-        //     let me = this;
+            axios.put('/user/actualizar', {
+                'nombre': this.nombre,
+                'tipo_documento': this.tipo_documento,
+                'num_documento': this.num_documento,
+                'direccion': this.direccion,
+                'telefono': this.telefono,
+                'email': this.email,
+                'idrol': this.idrol,
+                'usuario': this.usuario,
+                'password': this.password,
+                'id': this.persona_id
+            }).then(function (response) {
+                me.cerrarModal();
+                me.listarPersona(1, '', 'nombre');
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        validarIngreso: function validarIngreso() {
+            this.errorIngreso = 0;
+            this.errorMostrarMsjIngreso = [];
 
-        //     axios.put('/user/actualizar',{
-        //         'nombre': this.nombre,
-        //         'tipo_documento': this.tipo_documento,
-        //         'num_documento' : this.num_documento,
-        //         'direccion' : this.direccion,
-        //         'telefono' : this.telefono,
-        //         'email' : this.email,
-        //         'idrol' : this.idrol,
-        //         'usuario': this.usuario,
-        //         'password': this.password,
-        //         'id': this.persona_id
-        //     }).then(function (response) {
-        //         me.cerrarModal();
-        //         me.listarPersona(1,'','nombre');
-        //     }).catch(function (error) {
-        //         console.log(error);
-        //     }); 
-        // },
-        // validarPersona(){
-        //     this.errorPersona=0;
-        //     this.errorMostrarMsjPersona =[];
+            if (this.idproveedor == 0) this.errorMostrarMsjIngreso.push("Seleccione un proveedor");
+            if (this.tipo_comprobante == 0) this.errorMostrarMsjIngreso.push("Seleccione el comprobante");
+            if (this.num_comprobante == 0) this.errorMostrarMsjIngreso.push("Seleccione el número de comprobante");
+            if (this.impuesto == 0) this.errorMostrarMsjIngreso.push("Seleccione el impuesto de compra");
+            if (this.arrayDetalle.length <= 0) this.errorMostrarMsjIngreso.push("Ingrese detalles de la compra");
 
-        //     if (!this.nombre) this.errorMostrarMsjPersona.push("El nombre de la pesona no puede estar vacío.");
-        //     if (!this.usuario) this.errorMostrarMsjPersona.push("El nombre de usuario no puede estar vacío.");
-        //     if (!this.password) this.errorMostrarMsjPersona.push("La password del usuario no puede estar vacía.");
-        //     if (this.idrol==0) this.errorMostrarMsjPersona.push("Seleccione una Role.");
-        //     if (this.errorMostrarMsjPersona.length) this.errorPersona = 1;
+            if (this.errorMostrarMsjIngreso.length) this.errorIngreso = 1;
 
-        //     return this.errorPersona;
-        // },
+            return this.errorIngreso;
+        },
         mostrarDetalle: function mostrarDetalle() {
-            this.listado = 0;
+
+            var me = this;
+            me.listado = 0;
+            me.idproveedor = 0;
+            me.tipo_comprobante = 'Ticket';
+            me.serie_comprobante = '';
+            me.num_comprobante = '';
+            me.impuesto = 0.18;
+            me.total = 0.0;
+            me.idarticulo = 0;
+            me.articulo = '';
+            me.cantidad = 0;
+            me.precio = 0;
+            me.arrayDetalle = [];
         },
         ocultarDetalle: function ocultarDetalle() {
             this.listado = 1;
@@ -60934,6 +60993,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         abrirModal: function abrirModal() {
 
+            this.arrayArticulo = [];
             this.modal = 1;
             this.tituloModal = 'Seleccione uno o varios artículos';
         }
@@ -61418,10 +61478,6 @@ var render = function() {
                               _vm._v("Seleccione")
                             ]),
                             _vm._v(" "),
-                            _c("option", { attrs: { value: "BOLETA" } }, [
-                              _vm._v("Boleta")
-                            ]),
-                            _vm._v(" "),
                             _c("option", { attrs: { value: "FACTURA" } }, [
                               _vm._v("Factura")
                             ]),
@@ -61492,6 +61548,36 @@ var render = function() {
                           }
                         })
                       ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-12" }, [
+                      _c(
+                        "div",
+                        {
+                          directives: [
+                            {
+                              name: "show",
+                              rawName: "v-show",
+                              value: _vm.errorIngreso,
+                              expression: "errorIngreso"
+                            }
+                          ],
+                          staticClass: "form-group row div-error"
+                        },
+                        [
+                          _c(
+                            "div",
+                            { staticClass: "text-center text-error" },
+                            _vm._l(_vm.errorMostrarMsjIngreso, function(error) {
+                              return _c("div", {
+                                key: error,
+                                domProps: { textContent: _vm._s(error) }
+                              })
+                            }),
+                            0
+                          )
+                        ]
+                      )
                     ])
                   ]),
                   _vm._v(" "),

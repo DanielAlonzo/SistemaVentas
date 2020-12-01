@@ -452,7 +452,7 @@
                         me.listarPersona(1,'','nombre');
                         swalWithBootstrapButtons.fire(
                         'Desactivado!',
-                        'El registro ha sido descativado.',
+                        'El registro ha sido desactivado.',
                         'success'
                         )
                     })

@@ -686,84 +686,52 @@
                                
                              
             },
-            // desactivarUsuario(id){
-            //    swal({
-            //     title: 'Esta seguro de desactivar este usuario?',
-            //     type: 'warning',
-            //     showCancelButton: true,
-            //     confirmButtonColor: '#3085d6',
-            //     cancelButtonColor: '#d33',
-            //     confirmButtonText: 'Aceptar!',
-            //     cancelButtonText: 'Cancelar',
-            //     confirmButtonClass: 'btn btn-success',
-            //     cancelButtonClass: 'btn btn-danger',
-            //     buttonsStyling: false,
-            //     reverseButtons: true
-            //     }).then((result) => {
-            //     if (result.value) {
-            //         let me = this;
+            desactivarIngreso(id){
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+                })
 
-            //         axios.put('/user/desactivar',{
-            //             'id': id
-            //         }).then(function (response) {
-            //             me.listarPersona(1,'','nombre');
-            //             swal(
-            //             'Desactivado!',
-            //             'El registro ha sido desactivado con éxito.',
-            //             'success'
-            //             )
-            //         }).catch(function (error) {
-            //             console.log(error);
-            //         });
-                    
-                    
-            //     } else if (
-            //         // Read more about handling dismissals
-            //         result.dismiss === swal.DismissReason.cancel
-            //     ) {
-                    
-            //     }
-            //     }) 
-            // },
-            // activarUsuario(id){
-            //    swal({
-            //     title: 'Esta seguro de activar este usuario?',
-            //     type: 'warning',
-            //     showCancelButton: true,
-            //     confirmButtonColor: '#3085d6',
-            //     cancelButtonColor: '#d33',
-            //     confirmButtonText: 'Aceptar!',
-            //     cancelButtonText: 'Cancelar',
-            //     confirmButtonClass: 'btn btn-success',
-            //     cancelButtonClass: 'btn btn-danger',
-            //     buttonsStyling: false,
-            //     reverseButtons: true
-            //     }).then((result) => {
-            //     if (result.value) {
-            //         let me = this;
+                swalWithBootstrapButtons.fire({
+                title: 'Está seguro de anular este ingreso?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.isConfirmed) {
 
-            //         axios.put('/user/activar',{
-            //             'id': id
-            //         }).then(function (response) {
-            //             me.listarPersona(1,'','nombre');
-            //             swal(
-            //             'Activado!',
-            //             'El registro ha sido activado con éxito.',
-            //             'success'
-            //             )
-            //         }).catch(function (error) {
-            //             console.log(error);
-            //         });
+                    let me = this;
+                    axios.put('/ingreso/desactivar', {
+                        
+                        'id':id
+                    }).then(function (response) {
+                        
+                        me.listarIngreso(1,'','num_comprobante');
+                        swalWithBootstrapButtons.fire(
+                        'Anulado!',
+                        'El ingreso ha sido anulado.',
+                        'success'
+                        )
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        console.log(error);
+                    })
                     
+                } else if (
+                    /* Read more about handling dismissals below */
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
                     
-            //     } else if (
-            //         // Read more about handling dismissals
-            //         result.dismiss === swal.DismissReason.cancel
-            //     ) {
-                    
-            //     }
-            //     }) 
-            // },
+                }
+                })
+            },
+            
         },
         mounted() {
             this.listarIngreso(1,this.buscar,this.criterio);

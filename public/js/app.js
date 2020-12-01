@@ -59275,7 +59275,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     }).then(function (response) {
 
                         me.listarPersona(1, '', 'nombre');
-                        swalWithBootstrapButtons.fire('Desactivado!', 'El registro ha sido descativado.', 'success');
+                        swalWithBootstrapButtons.fire('Desactivado!', 'El registro ha sido desactivado.', 'success');
                     }).catch(function (error) {
                         // handle error
                         console.log(error);
@@ -60996,6 +60996,44 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.arrayArticulo = [];
             this.modal = 1;
             this.tituloModal = 'Seleccione uno o varios artículos';
+        },
+        desactivarIngreso: function desactivarIngreso(id) {
+            var _this = this;
+
+            var swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: 'Está seguro de anular este ingreso?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then(function (result) {
+                if (result.isConfirmed) {
+
+                    var me = _this;
+                    axios.put('/ingreso/desactivar', {
+
+                        'id': id
+                    }).then(function (response) {
+
+                        me.listarIngreso(1, '', 'num_comprobante');
+                        swalWithBootstrapButtons.fire('Anulado!', 'El ingreso ha sido anulado.', 'success');
+                    }).catch(function (error) {
+                        // handle error
+                        console.log(error);
+                    });
+                } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel) {}
+            });
         }
     },
     mounted: function mounted() {

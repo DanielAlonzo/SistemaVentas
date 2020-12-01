@@ -141,23 +141,23 @@
                         <div class="form-group row border">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Artículo</label>
+                                    <label>Artículo <span style="color:red" v-show="idarticulo==0">(Seleccione*)</span></label>
                                     <div class="form-inline">
                                         <input type="text" class="form-control" v-model="codigo" @keyup.enter="buscarArticulo()" placeholder="Ingrese artículo">
-                                        <button class="btn btn-primary">...</button>
+                                        <button @click="abrirModal()" class="btn btn-primary">...</button>
                                         <input type="text" readonly class="form-control" v-model="articulo">
                                     </div>                                         
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Precio</label>
+                                    <label>Precio <span style="color:red" v-show="precio==0">(Ingrese precio*)</span></label>
                                     <input type="number" value="0" step="any" class="form-control" v-model="precio">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Cantidad</label>
+                                    <label>Cantidad <span style="color:red" v-show="cantidad==0">(Ingrese cantidad*)</span></label>
                                     <input type="number" value="0" class="form-control" v-model="cantidad">
                                 </div>
                             </div>
@@ -180,9 +180,9 @@
                                         </tr>
                                     </thead>
                                     <tbody v-if="arrayDetalle.length">
-                                        <tr v-for="detalle in arrayDetalle" :key="detalle.id">
+                                        <tr v-for="(detalle,index) in arrayDetalle" :key="detalle.id">
                                             <td>
-                                                <button type="button" class="btn btn-danger btn-sm">
+                                                <button @click="eliminarDetalle(index)" type="button" class="btn btn-danger btn-sm">
                                                     <i class="icon-close"></i>
                                                 </button>
                                             </td>
@@ -202,15 +202,15 @@
                                        
                                         <tr style="background-color: #CEECF5;">
                                             <td colspan="4" align="right"><strong>Total Parcial:</strong></td>
-                                            <td>$ 5</td>
+                                            <td>L. {{totalParcial=(total-totalImpuesto).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
                                             <td colspan="4" align="right"><strong>Total Impuesto:</strong></td>
-                                            <td>$ 1</td>
+                                            <td>L. {{totalImpuesto=((total*impuesto)/(1+impuesto)).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
                                             <td colspan="4" align="right"><strong>Total Neto:</strong></td>
-                                            <td>$ 6</td>
+                                            <td>L. {{total=calcularTotal}}</td>
                                         </tr>
                                     </tbody>  
                                     <tbody v-else>
@@ -245,6 +245,71 @@
                         </div>
                         <div class="modal-body">
                             
+                             <div class="form-group row">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <select class="form-control col-md-3" v-model="criterioA">
+                                        <option value="nombre">Nombre</option>
+                                        <option value="descripcion">Descripción</option>
+                                        <option value="codigo">Código</option>
+
+                                        </select>
+                                         <input type="text" v-model="buscarA" @keyup.enter="listarArticulo(buscarA,criterioA)" class="form-control" placeholder="Información a buscar">
+                                        <button type="submit" @click="listarArticulo(buscarA,criterioA)" class="btn btn-info"><i class="fa fa-search"></i> Buscar</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+
+                                <table class="table table-bordered table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                        
+
+                                            <th>Código</th>
+                                            <th>Nombre</th>
+                                            <th>Categoría</th>
+                                            <th>Precio</th>
+                                            <th>Stock</th>
+                                          
+                                            <th>Estado</th>
+                                            <th>Opciones</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="articulo in arrayArticulo" :key="articulo.id">
+                                            
+                                            <td v-text="articulo.codigo"></td>
+                                            <td v-text="articulo.nombre"></td>
+                                            <td v-text="articulo.nombre_categoria"></td>
+                                            <td v-text="articulo.precio"></td>
+                                            <td v-text="articulo.stock"></td>
+                                          
+                                            <td>
+                                                <div v-if="articulo.estado">
+                                                    <span class="badge badge-success">Activo</span>
+                                                    
+                                                </div>
+                                                <div v-else>
+                                                    <span class="badge badge-warning">Inactivo</span>
+                                                    
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button type="button" @click="agregarDetalleModal( articulo)" class="btn btn-success btn-sm" >
+                                                <i class="icon-check"></i>
+                                                </button>
+                                               
+                                              
+
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
@@ -275,6 +340,8 @@
                 num_comprobante : '',
                 impuesto: 0.18,
                 total:0.0,
+                totalImpuesto: 0.0,
+                totalParcial: 0.0,
                 arrayIngreso : [],
                 arrayProveedor:[], 
                 arrayDetalle : [],
@@ -296,6 +363,8 @@
                 offset : 3,
                 criterio : 'num_comprobante',
                 buscar : '',
+                criterioA:'nombre',
+                buscarA:'',
                 arrayArticulo: [],
                 idarticulo: 0,
                 codigo: '',
@@ -335,7 +404,13 @@
                 }
                 return pagesArray;             
 
-            }
+            },
+            calcularTotal: function(){
+                var resultado = 0.0;
+                for(var i=0; i<this.arrayDetalle.length;i++){
+                    resultado=resultado+(this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)
+                }return resultado;
+            },
         },
         methods : {
             listarIngreso (page,buscar,criterio){
@@ -398,13 +473,76 @@
                 //Envia la petición para visualizar la data de esa página
                 me.listarIngreso(page,buscar,criterio);
             },
+            encuentra(id){
+                var sw=0;
+                for(var i=0; i<this.arrayDetalle.length;i++){
+                    if(this.arrayDetalle[i].idarticulo==id){
+                        sw=true;
+                    }
+                }
+                return sw;
+            },
+            eliminarDetalle(index){
+                let me = this;
+                me.arrayDetalle.splice(index,1);
+            },
+
             agregarDetalle(){
                 let me = this;
-                me.arrayDetalle.push({
-                    idarticulo: me.idarticulo,
-                    articulo: me.articulo,
-                    cantidad: me.cantidad,
-                    precio: me.precio
+                if(me.idarticulo == 0 || me.cantidad == 0 || me.precio == 0){
+
+                }else{
+                    if(me.encuentra(me.idarticulo)){
+                        const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: 'btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                        })
+                        swalWithBootstrapButtons.fire({
+                            title: 'Error!',
+                            icon: 'error',
+                            text: 'Ese artículo ya se ha agregado',
+                          
+                            confirmButtonText: 'Aceptar',
+                          
+                            
+                        })
+                    }else{
+
+                        me.arrayDetalle.push({
+                            idarticulo: me.idarticulo,
+                            articulo: me.articulo,
+                            cantidad: me.cantidad,
+                            precio: me.precio
+                        });
+                        me.codigo="";
+                        me.idarticulo=0;
+                        me.articulo="";
+                        me.cantidad=0;
+                        me.precio=0;
+                    }    
+
+                    
+                }
+
+                
+            },
+            agregarDetalleModal(data = []){
+
+            },
+            listarArticulo (buscar,criterio){
+
+                let me=this;
+                var url= '/articulo/listarArticulo?buscar='+ buscar + '&criterio='+ criterio;
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;
+                    me.arrayArticulo = respuesta.articulos.data;
+                    
+                })
+                .catch(function (error) {
+                    console.log(error);
                 });
             },
             // registrarPersona(){
@@ -475,64 +613,19 @@
             ocultarDetalle(){
                 this.listado=1;
             },
-            // cerrarModal(){
-            //     this.modal=0;
-            //     this.tituloModal='';
-            //     this.nombre='';
-            //     this.tipo_documento='DNI';
-            //     this.num_documento='';
-            //     this.direccion='';
-            //     this.telefono='';
-            //     this.email='';
-            //     this.usuario='';
-            //     this.password='';
-            //     this.idrol=0;
-            //     this.errorPersona=0;
-            // },
-            // abrirModal(modelo, accion, data = []){
-            //     this.selectRol();
-            //     switch(modelo){
-            //         case "persona":
-            //         {
-            //             switch(accion){
-            //                 case 'registrar':
-            //                 {
-            //                     this.modal = 1;
-            //                     this.tituloModal = 'Registrar Usuario';
-            //                     this.nombre= '';
-            //                     this.tipo_documento='DNI';
-            //                     this.num_documento='';
-            //                     this.direccion='';
-            //                     this.telefono='';
-            //                     this.email='';
-            //                     this.usuario='';
-            //                     this.password='';
-            //                     this.idrol=0;
-            //                     this.tipoAccion = 1;
-            //                     break;
-            //                 }
-            //                 case 'actualizar':
-            //                 {
-            //                     //console.log(data);
-            //                     this.modal=1;
-            //                     this.tituloModal='Actualizar Usuario';
-            //                     this.tipoAccion=2;
-            //                     this.persona_id=data['id'];
-            //                     this.nombre = data['nombre'];
-            //                     this.tipo_documento = data['tipo_documento'];
-            //                     this.num_documento = data['num_documento'];
-            //                     this.direccion = data['direccion'];
-            //                     this.telefono = data['telefono'];
-            //                     this.email = data['email'];
-            //                     this.usuario = data['usuario'];
-            //                     this.password=data['password'];
-            //                     this.idrol=data['idrol'];
-            //                     break;
-            //                 }
-            //             }
-            //         }
-            //     }
-            // },
+            cerrarModal(){
+                this.modal=0;
+                this.tituloModal='';
+                
+            },
+            abrirModal(){
+                
+              
+                                this.modal = 1;
+                                this.tituloModal = 'Seleccione uno o varios artículos';
+                               
+                             
+            },
             // desactivarUsuario(id){
             //    swal({
             //     title: 'Esta seguro de desactivar este usuario?',

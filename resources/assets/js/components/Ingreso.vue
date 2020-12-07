@@ -247,19 +247,19 @@
                             <div class="col-md-9">
                                 <div class="form-group">
                                     <label for="">Proveedor</label>
-                                    <label style="color:red">*</label>
+                                    
                                    <p v-text="proveedor"></p>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <label for="">Impuesto</label>
-                                <label style="color:red">*</label>
+                                
                                 <p v-text="impuesto"></p>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Tipo Comprobante</label>
-                                    <label style="color:red">*</label>
+                                    
                                     <p v-text="tipo_comprobante"></p>
                                 </div>
                             </div>
@@ -272,7 +272,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Número Comprobante</label>
-                                    <label style="color:red">*</label>
+                                    
                                     <p v-text="num_comprobante"></p>
                                 </div>
                             </div>
@@ -310,21 +310,21 @@
                                         </tr>
                                        
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total Parcial:</strong></td>
+                                            <td colspan="3" align="right"><strong>Total Parcial:</strong></td>
                                             <td>L. {{totalParcial=(total-totalImpuesto).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total Impuesto:</strong></td>
-                                            <td>L. {{totalImpuesto=((total*impuesto)/(1+impuesto)).toFixed(2)}}</td>
+                                            <td colspan="3" align="right"><strong>Total Impuesto:</strong></td>
+                                            <td>L. {{totalImpuesto=((total*impuesto)).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total Neto:</strong></td>
-                                            <td>L. {{total=calcularTotal}}</td>
+                                            <td colspan="3" align="right"><strong>Total Neto:</strong></td>
+                                            <td>L. {{total}}</td>
                                         </tr>
                                     </tbody>  
                                     <tbody v-else>
                                         <tr>
-                                            <td  colspan="5">No hay articulos agregados</td>
+                                            <td  colspan="4">No hay articulos agregados</td>
                                         </tr>
                                     </tbody>                                  
                                 </table>
@@ -776,7 +776,39 @@
                 this.listado=1;
             },
             verIngreso(id){
-                this.listado=2;
+                let me = this;
+                me.listado=2;
+                
+                //Ingresos
+                var arrayIngresoTemp=[];
+                var url= '/ingreso/obtenerCabecera?id='+id;
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;
+                    arrayIngresoTemp = respuesta.ingreso;
+                    me.proveedor = arrayIngresoTemp[0]['nombre'];
+                    me.tipo_comprobante = arrayIngresoTemp[0]['tipo_comprobante'];
+                    me.serie_comprobante = arrayIngresoTemp[0]['serie_comprobante'];
+                    me.num_comprobante = arrayIngresoTemp[0]['num_comprobante'];
+                    me.impuesto = arrayIngresoTemp[0]['impuesto'];
+                    me.total = arrayIngresoTemp[0]['total'];
+                   
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+                //Detalles
+
+                    var urld= '/ingreso/obtenerDetalles?id='+id;
+                axios.get(urld).then(function (response) {
+                    var respuesta= response.data;
+                    me.arrayDetalle = respuesta.detalles;
+
+                   
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             },
             cerrarModal(){
                 this.modal=0;

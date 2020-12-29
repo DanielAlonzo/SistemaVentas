@@ -21,7 +21,7 @@ class VentaController extends Controller
             $ventas = Venta::join('personas','ventas.idcliente','=','personas.id')
             ->join('users','ventas.idusuario','=','users.id')
             ->select('ventas.id','ventas.tipo_comprobante','ventas.serie_comprobante',
-            'ventas.num_comprobante', 'ventas.cai', 'ventas.rango','ventas.fecha_hora','ventas.impuesto','ventas.total',
+            'ventas.num_comprobante','ventas.fecha_hora','ventas.impuesto','ventas.total',
             'ventas.estado','personas.nombre', 'personas.num_documento','users.usuario')
             ->orderBy('ventas.id', 'desc')->paginate(10);
         }
@@ -29,7 +29,7 @@ class VentaController extends Controller
             $ventas = Venta::join('personas','ventas.idcliente','=','personas.id')
             ->join('users','ventas.idusuario','=','users.id')
             ->select('ventas.id','ventas.tipo_comprobante','ventas.serie_comprobante',
-            'ventas.num_comprobante', 'ventas.cai', 'ventas.rango','ventas.fecha_hora','ventas.impuesto','ventas.total',
+            'ventas.num_comprobante','ventas.fecha_hora','ventas.impuesto','ventas.total',
             'ventas.estado','personas.nombre', 'personas.num_documento','users.usuario')
             ->where('ventas.'.$criterio, 'like', '%'. $buscar . '%')->orderBy('ventas.id', 'desc')->paginate(10);
         }
@@ -54,7 +54,7 @@ class VentaController extends Controller
         $venta = Venta::join('personas','ventas.idcliente','=','personas.id')
         ->join('users','ventas.idusuario','=','users.id')
         ->select('ventas.id','ventas.tipo_comprobante','ventas.serie_comprobante',
-        'ventas.num_comprobante', 'ventas.cai', 'ventas.rango','ventas.fecha_hora','ventas.impuesto','ventas.total',
+        'ventas.num_comprobante','ventas.fecha_hora','ventas.impuesto','ventas.total',
         'ventas.estado','personas.nombre', 'personas.num_documento','users.usuario')->where('ventas.id', '=', $id)
         ->orderBy('ventas.id', 'desc')->take(1)->get();
         
@@ -68,8 +68,8 @@ class VentaController extends Controller
         $id = $request->id;
         $detalles = DetalleVenta::join('articulos','detalle_ventas.idarticulo','=','articulos.id')
         ->select('detalle_ventas.cantidad','detalle_ventas.precio','articulos.nombre as articulo', 
-        'detalle_ventas.descuento', 'detalle_ventas.exento', 'detalle_ventas.grabado_quince', 
-        'detalle_ventas.grabado_dieciocho')
+        'detalle_ventas.descuento', 'detalle_ventas.exonerado','detalle_ventas.exento', 'detalle_ventas.gravado_quince', 
+        'detalle_ventas.gravado_dieciocho')
         ->where('detalle_ventas.idingreso', '=', $id)
         ->orderBy('detalle_ventas.id', 'desc')->get();
         

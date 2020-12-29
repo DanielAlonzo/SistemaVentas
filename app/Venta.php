@@ -13,8 +13,6 @@ class Venta extends Model
         'tipo_comprobante',
         'serie_comprobante',
         'num_comprobante',
-        'cai',
-        'rango',
         'fecha_hora',
         'impuesto',
         'total',

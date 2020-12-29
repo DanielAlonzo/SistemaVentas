@@ -16,9 +16,10 @@ class DetalleVenta extends Model
         'cantidad',
         'precio',
         'descuento',
+        'exonerado',
         'exento',
-        'grabado_quince',
-        'grabado_dieciocho'
+        'gravado_quince',
+        'gravado_dieciocho'
     ];
 
     public $timestamps = false;

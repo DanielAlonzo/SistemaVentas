@@ -13,7 +13,7 @@ class CreateTipoDescuentoTable extends Migration
      */
     public function up()
     {
-        Schema::create('tipo_descuento', function (Blueprint $table) {
+        Schema::create('tipos_descuentos', function (Blueprint $table) {
             $table->increments('id');
             $table->string('descuento');
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateTipoDescuentoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tipo_descuento');
+        Schema::dropIfExists('tipos_descuentos');
     }
 }

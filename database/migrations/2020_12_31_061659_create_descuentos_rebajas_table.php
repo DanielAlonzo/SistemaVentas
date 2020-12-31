@@ -17,8 +17,8 @@ class CreateDescuentosRebajasTable extends Migration
             $table->increments('id');
             $table->integer('idusuario')->unsigned();
             $table->foreign('idusuario')->references('id')->on('users');
-            $table->integer('id_tipoDescuento')->unsigned();
-            $table->foreign('id_tipoDescuento')->references('id')->on('tipo_descuento');
+            $table->integer('idtipodescuento')->unsigned();
+            $table->foreign('idtipodescuento')->references('id')->on('tipos_descuentos');
             $table->decimal('valor');
             $table->timestamps();
         });

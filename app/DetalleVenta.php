@@ -8,7 +8,7 @@ class DetalleVenta extends Model
 {
     protected $table = 'detalle_ventas';
     //
-    protected $fiallable = [
+    protected $fillable = [
 
 
         'idventa',

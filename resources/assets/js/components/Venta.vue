@@ -172,7 +172,12 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Descuento</label>
-                                    <input type="number" value="0" class="form-control" v-model="descuento">
+                                     <select class="form-control" v-model="iddescuento">
+                                            <option value="0" disabled>
+                                                Seleccionar
+                                            </option>
+                                            <option v-for="descuento in arrayDescuento" :key="descuento.id" :value="descuento.id" v-text="descuento.tipodescuento"></option>
+                                        </select>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -250,12 +255,12 @@
                                                 {{detalle.precio*detalle.cantidad}}
                                             </td>
                                         </tr>
-                                        <!-- TODO: Arreglar esto! solo sera texto -->
+                                        <!-- TODO: Arreglar esto! solo sera texto, NO OLVIDAR AGREGAR EL 'V-FOR' PARA QUE FUNCIONE  -->
                                         <!-- FIXME:  -->
                                         <tr style="background-color: #b0e5f5;">
                                             <td colspan="4" align="right"><strong>Descuento:</strong></td>
                                             <td>
-                                                <!-- <input v-model="detalle.descuento" type="number"  class="form-control"> -->
+                                                <input  type="number"  class="form-control">
                                             </td>
 
                                             
@@ -536,6 +541,7 @@
                 arrayVenta : [],
                 arrayCliente:[], 
                 arrayDetalle : [],
+                arrayDescuento: [],
                 
                 listado:1,
                 modal : 0,
@@ -562,7 +568,9 @@
                 articulo: '',
                 precio: 0,
                 cantidad: 0,
-                descuento: 0,
+               
+                iddescuento: 0,
+                tipodescuento: '',
                 exonerado: 0,
                 exento: 0,
                 gravado_quince: 0,
@@ -631,6 +639,19 @@
                     q: search
                     me.arrayProveedor = respuesta.proveedores;
                     loading(false)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+            seleccionarDescuento(){
+                  let me=this;
+                var url= '/descuento/seleccionarDescuento';
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;
+                    me.arrayDescuento = respuesta.descuentos;
+                    
+                    //console.log(response);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -711,13 +732,15 @@
                             idarticulo: me.idarticulo,
                             articulo: me.articulo,
                             cantidad: me.cantidad,
-                            precio: me.precio
+                            precio: me.precio,
+                           // exento: me.exento
                         });
                         me.codigo="";
                         me.idarticulo=0;
                         me.articulo="";
                         me.cantidad=0;
                         me.precio=0;
+                       // me.exento=0;
                     }    
 
                     
@@ -751,7 +774,9 @@
                             idarticulo: data['id'],
                             articulo: data['nombre'],
                             cantidad: 1,
-                            precio: 1
+                            precio: 1,
+                           // exento: 1
+
                         });
                     }    
             },
@@ -797,6 +822,7 @@
                     me.articulo='';
                     me.cantidad=0;
                     me.precio=0;
+                  //  me.exento=0;
                     me.arrayDetalle=[];
 
                 }).catch(function (error) {
@@ -856,7 +882,10 @@
                 me.articulo='';
                 me.cantidad=0;
                 me.precio=0;
+                // me.exento=0;
                 me.arrayDetalle=[];
+
+                me.seleccionarDescuento();
             },
             ocultarDetalle(){
                 this.listado=1;

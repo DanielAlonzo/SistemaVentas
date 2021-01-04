@@ -81,6 +81,7 @@ Route::group(['middleware'=>['auth']],function(){
         Route::put('/cliente/actualizar', 'ClienteController@update');
 
         Route::get('/descuento', 'DescuentoController@index');
+        Route::get('/descuento/seleccionarDescuento','DescuentoController@seleccionarDescuento');
 
         Route::get('/salida', 'SalidaController@index');
 

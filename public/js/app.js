@@ -63468,6 +63468,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -63488,6 +63493,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             arrayVenta: [],
             arrayCliente: [],
             arrayDetalle: [],
+            arrayDescuento: [],
 
             listado: 1,
             modal: 0,
@@ -63514,7 +63520,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             articulo: '',
             precio: 0,
             cantidad: 0,
-            descuento: 0,
+
+            iddescuento: 0,
+            tipodescuento: '',
             exonerado: 0,
             exento: 0,
             gravado_quince: 0,
@@ -63582,6 +63590,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 q: search;
                 me.arrayProveedor = respuesta.proveedores;
                 loading(false);
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        seleccionarDescuento: function seleccionarDescuento() {
+            var me = this;
+            var url = '/descuento/seleccionarDescuento';
+            axios.get(url).then(function (response) {
+                var respuesta = response.data;
+                me.arrayDescuento = respuesta.descuentos;
+
+                //console.log(response);
             }).catch(function (error) {
                 console.log(error);
             });
@@ -63656,12 +63676,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         articulo: me.articulo,
                         cantidad: me.cantidad,
                         precio: me.precio
+                        // exento: me.exento
                     });
                     me.codigo = "";
                     me.idarticulo = 0;
                     me.articulo = "";
                     me.cantidad = 0;
                     me.precio = 0;
+                    // me.exento=0;
                 }
             }
         },
@@ -63693,6 +63715,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     articulo: data['nombre'],
                     cantidad: 1,
                     precio: 1
+                    // exento: 1
+
                 });
             }
         },
@@ -63736,6 +63760,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.articulo = '';
                 me.cantidad = 0;
                 me.precio = 0;
+                //  me.exento=0;
                 me.arrayDetalle = [];
             }).catch(function (error) {
                 console.log(error);
@@ -63794,7 +63819,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             me.articulo = '';
             me.cantidad = 0;
             me.precio = 0;
+            // me.exento=0;
             me.arrayDetalle = [];
+
+            me.seleccionarDescuento();
         },
         ocultarDetalle: function ocultarDetalle() {
             this.listado = 1;
@@ -64639,27 +64667,57 @@ var render = function() {
                       _c("div", { staticClass: "form-group" }, [
                         _c("label", [_vm._v("Descuento")]),
                         _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.descuento,
-                              expression: "descuento"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { type: "number", value: "0" },
-                          domProps: { value: _vm.descuento },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.iddescuento,
+                                expression: "iddescuento"
                               }
-                              _vm.descuento = $event.target.value
+                            ],
+                            staticClass: "form-control",
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.iddescuento = $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              }
                             }
-                          }
-                        })
+                          },
+                          [
+                            _c(
+                              "option",
+                              { attrs: { value: "0", disabled: "" } },
+                              [
+                                _vm._v(
+                                  "\n                                        Seleccionar\n                                    "
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _vm._l(_vm.arrayDescuento, function(descuento) {
+                              return _c("option", {
+                                key: descuento.id,
+                                domProps: {
+                                  value: descuento.id,
+                                  textContent: _vm._s(descuento.tipodescuento)
+                                }
+                              })
+                            })
+                          ],
+                          2
+                        )
                       ])
                     ]),
                     _vm._v(" "),
@@ -65607,7 +65665,9 @@ var staticRenderFns = [
         _c("strong", [_vm._v("Descuento:")])
       ]),
       _vm._v(" "),
-      _c("td")
+      _c("td", [
+        _c("input", { staticClass: "form-control", attrs: { type: "number" } })
+      ])
     ])
   },
   function() {

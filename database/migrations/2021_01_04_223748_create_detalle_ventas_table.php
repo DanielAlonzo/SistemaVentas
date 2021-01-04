@@ -23,8 +23,8 @@ class CreateDetalleVentasTable extends Migration
 
             $table->integer('cantidad');
             $table->decimal('precio',11,2);
-            $table->integer('idDescuento')->unsigned();
-            $table->foreign('idDescuento')->references('id')->on('descuentos_rebajas');
+            $table->integer('descuento')->unsigned();
+            $table->foreign('descuento')->references('id')->on('descuentos');
             $table->decimal('exonerado',11,2);
             $table->decimal('exento',11,2);
             $table->decimal('gravado_quince',11,2);

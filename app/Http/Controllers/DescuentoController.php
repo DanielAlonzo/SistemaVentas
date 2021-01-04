@@ -37,4 +37,13 @@ class DescuentoController extends Controller
         ];
         
     }
+    public function seleccionarDescuento(Request $request){
+        if(!$request->ajax())return redirect('/');
+
+        $descuentos = Descuento::select('id','tipodescuento')->orderBy('id', 'asc')->get();
+
+      
+
+        return ['descuentos' => $descuentos];
+    }
 }

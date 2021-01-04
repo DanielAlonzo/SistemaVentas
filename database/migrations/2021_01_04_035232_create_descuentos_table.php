@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTipoDescuentoTable extends Migration
+class CreateDescuentosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,13 @@ class CreateTipoDescuentoTable extends Migration
      */
     public function up()
     {
-        Schema::create('tipos_descuentos', function (Blueprint $table) {
+        Schema::create('descuentos', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('descuento');
+            $table->integer('idusuario')->unsigned();
+            $table->foreign('idusuario')->references('id')->on('users');
+            $table->string('tipodescuento');
+          
+            $table->decimal('valor');
             $table->timestamps();
         });
     }
@@ -27,6 +31,6 @@ class CreateTipoDescuentoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tipos_descuentos');
+        Schema::dropIfExists('descuentos');
     }
 }

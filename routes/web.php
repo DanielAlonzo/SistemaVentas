@@ -80,6 +80,10 @@ Route::group(['middleware'=>['auth']],function(){
         Route::post('/cliente/registrar', 'ClienteController@store');
         Route::put('/cliente/actualizar', 'ClienteController@update');
 
+        Route::get('/descuento', 'DescuentoController@index');
+
+        Route::get('/salida', 'SalidaController@index');
+
         Route::get('/rol', 'RolController@index');
         Route::get('/rol/seleccionarRol', 'RolController@seleccionarRol');
         

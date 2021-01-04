@@ -37,29 +37,37 @@
                     <cliente></cliente>
                 
                 </template>
-
                 <template v-if="menu==7">
-                    <user></user>
+                    <descuento></descuento>
                 
                 </template>
                 <template v-if="menu==8">
-                    <rol></rol>      
+                    <salida></salida>
+                
                 </template>
 
                 <template v-if="menu==9">
-                    <h1>Reporte de ingresos</h1>
+                    <user></user>
                 
                 </template>
                 <template v-if="menu==10">
+                    <rol></rol>      
+                </template>
+
+                <template v-if="menu==11">
+                    <h1>Reporte de ingresos</h1>
+                
+                </template>
+                <template v-if="menu==12">
                     <h1>Reporte de ventas</h1>
                 
                 </template>
 
-                <template v-if="menu==11">
+                <template v-if="menu==13">
                     <h1>Ayuda</h1>
                 
                 </template>
-                <template v-if="menu==12">
+                <template v-if="menu==14">
                     <h1>Acerca de</h1>
                 
                 </template>
@@ -74,17 +82,27 @@
                      <cliente></cliente>
         
                  </template>
-                 <template v-if="menu==10">
-                     <h1>Reporte de ventas</h1>
-        
-                 </template>
-
-                 <template v-if="menu==11">
-                      <h1>Ayuda</h1>
-        
+                 <template v-if="menu==7">
+                    <descuento></descuento>
+                
                 </template>
-                 <template v-if="menu==12">
+                <template v-if="menu==8">
+                    <salida></salida>
+                
+                </template>
+                </template>
+                <template v-if="menu==12">
+                    <h1>Reporte de ventas</h1>
+                
+                </template>
+
+                <template v-if="menu==13">
+                    <h1>Ayuda</h1>
+                
+                </template>
+                <template v-if="menu==14">
                     <h1>Acerca de</h1>
+                
                 </template>
             @elseif(Auth::user()->idrol==3)
                  

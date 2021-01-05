@@ -34,40 +34,44 @@
                 
                 </template>
                 <template v-if="menu==6">
-                    <cliente></cliente>
+                    <clientes></clientes>
                 
                 </template>
                 <template v-if="menu==7">
-                    <descuento></descuento>
+                    <cliente></cliente>
                 
                 </template>
                 <template v-if="menu==8">
+                    <descuento></descuento>
+                
+                </template>
+                <template v-if="menu==9">
                     <salida></salida>
                 
                 </template>
 
-                <template v-if="menu==9">
+                <template v-if="menu==10">
                     <user></user>
                 
                 </template>
-                <template v-if="menu==10">
+                <template v-if="menu==11">
                     <rol></rol>      
                 </template>
 
-                <template v-if="menu==11">
+                <template v-if="menu==12">
                     <h1>Reporte de ingresos</h1>
                 
                 </template>
-                <template v-if="menu==12">
+                <template v-if="menu==13">
                     <h1>Reporte de ventas</h1>
                 
                 </template>
 
-                <template v-if="menu==13">
+                <template v-if="menu==14">
                     <h1>Ayuda</h1>
                 
                 </template>
-                <template v-if="menu==14">
+                <template v-if="menu==15">
                     <h1>Acerca de</h1>
                 
                 </template>
@@ -77,30 +81,35 @@
                  <template v-if="menu==5">
                  <venta></venta>
         
+                
                  </template>
                  <template v-if="menu==6">
+                    <clientes></clientes>
+                
+                </template>
+                 <template v-if="menu==7">
                      <cliente></cliente>
         
                  </template>
-                 <template v-if="menu==7">
+                 <template v-if="menu==8">
                     <descuento></descuento>
                 
                 </template>
-                <template v-if="menu==8">
+                <template v-if="menu==9">
                     <salida></salida>
                 
                 </template>
                 </template>
-                <template v-if="menu==12">
+                <template v-if="menu==13">
                     <h1>Reporte de ventas</h1>
                 
                 </template>
 
-                <template v-if="menu==13">
+                <template v-if="menu==14">
                     <h1>Ayuda</h1>
                 
                 </template>
-                <template v-if="menu==14">
+                <template v-if="menu==15">
                     <h1>Acerca de</h1>
                 
                 </template>

@@ -8,7 +8,7 @@
                 <!-- Ejemplo de tabla Listado -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="icon-notebook"></i> Personas
+                        <i class="icon-notebook"></i> Clientes
                         <button type="button" style="margin-left: 10px" @click="abrirModal('persona','registrar')" class="btn btn-info" >
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
@@ -43,17 +43,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="persona in arrayPersona" :key="persona.id">
+                                <tr v-for="cliente in arrayCliente" :key="cliente.id">
                                     
-                                    <td v-text="persona.nombre"></td>
-                                    <td v-text="persona.tipo_documento"></td>
-                                    <td v-text="persona.num_documento"></td>
-                                    <td v-text="persona.direccion"></td>
-                                    <td v-text="persona.telefono"></td>
-                                    <td v-text="persona.email"></td>
+                                    <td v-text="cliente.nombre"></td>
+                                    <td v-text="cliente.tipo_documento"></td>
+                                    <td v-text="cliente.num_documento"></td>
+                                    <td v-text="cliente.direccion"></td>
+                                    <td v-text="cliente.telefono"></td>
+                                    <td v-text="cliente.email"></td>
                                     
                                     <td>
-                                        <button type="button" @click="abrirModal('persona', 'actualizar', persona)" class="btn btn-primary btn-sm" >
+                                        <button type="button" @click="abrirModal('cliente', 'actualizar', cliente)" class="btn btn-primary btn-sm" >
                                           <i class="icon-pencil"></i>
                                         </button> 
 
@@ -166,14 +166,14 @@
     export default {
         data (){
             return{
-                persona_id:0,
+                cliente_id:0,
                 nombre: '',
                 tipo_documento: '',
                 num_documento: '',
                 direccion: '',
                 telefono:'',
                 email:'',
-                arrayPersona :[],
+                arrayCliente :[],
                 modal : 0,
                 tituloModal : '',
                 tipoAccion : 0,
@@ -226,10 +226,10 @@
         methods : {
             listarPersona(page,buscar,criterio){
                 let me=this;
-                var url= '/cliente?page=' + page + '&buscar='+ buscar + '&criterio='+ criterio;
+                var url= '/clientes?page=' + page + '&buscar='+ buscar + '&criterio='+ criterio;
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
-                    me.arrayPersona = respuesta.personas.data;
+                    me.arrayCliente = respuesta.clientes.data;
                     me.pagination= respuesta.pagination;
                 })
                 .catch(function (error) {

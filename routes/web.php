@@ -70,6 +70,8 @@ Route::group(['middleware'=>['auth']],function(){
         Route::put('/articulo/activar', 'ArticuloController@activar');
         Route::get('/articulo/buscarArticulo', 'ArticuloController@buscarArticulo');
         Route::get('/articulo/listarArticulo', 'ArticuloController@listarArticulo');
+        Route::get('/articulo/buscarArticuloVenta', 'ArticuloController@buscarArticuloVenta');
+        Route::get('/articulo/listarArticuloVenta', 'ArticuloController@listarArticuloVenta');
 
         Route::get('/proveedor', 'ProveedorController@index');
         Route::post('/proveedor/registrar', 'ProveedorController@store');
@@ -81,6 +83,9 @@ Route::group(['middleware'=>['auth']],function(){
         Route::put('/cliente/actualizar', 'ClienteController@update');
 
         Route::get('/clientes', 'ClientesController@index');
+        Route::post('/clientes/registrar', 'ClientesController@store');
+        Route::put('/clientes/actualizar', 'ClientesController@update');
+        Route::get('/clientes/seleccionarCliente', 'ClientesController@seleccionarCliente');
 
         Route::get('/descuento', 'DescuentoController@index');
         Route::get('/descuento/seleccionarDescuento','DescuentoController@seleccionarDescuento');

@@ -63521,6 +63521,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             articulo: '',
             precio: 0,
             cantidad: 0,
+            stock: 0,
 
             iddescuento: 0,
             tipodescuento: '',
@@ -63581,15 +63582,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 console.log(error);
             });
         },
-        seleccionarProveedor: function seleccionarProveedor(search, loading) {
+        seleccionarCliente: function seleccionarCliente(search, loading) {
             var me = this;
             loading(true);
-            var url = '/proveedor/seleccionarProveedor?filtro=' + search;
+            var url = '/clientes/seleccionarCliente?filtro=' + search;
             axios.get(url).then(function (response) {
                 //console.log(response);
                 var respuesta = response.data;
                 q: search;
-                me.arrayProveedor = respuesta.proveedores;
+                me.arrayCliente = respuesta.clientes;
                 loading(false);
             }).catch(function (error) {
                 console.log(error);
@@ -63607,14 +63608,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 console.log(error);
             });
         },
-        getDatosProveedor: function getDatosProveedor(val1) {
+        getDatosCliente: function getDatosCliente(val1) {
             var me = this;
             me.loading = true;
-            me.idproveedor = val1.id;
+            me.idcliente = val1.id;
         },
         buscarArticulo: function buscarArticulo() {
             var me = this;
-            var url = '/articulo/buscarArticulo?filtro=' + me.codigo;
+            var url = '/articulo/buscarArticuloVenta?filtro=' + me.codigo;
 
             axios.get(url).then(function (response) {
                 var respuesta = response.data;
@@ -63623,6 +63624,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 if (me.arrayArticulo.length > 0) {
                     me.articulo = me.arrayArticulo[0]['nombre'];
                     me.idarticulo = me.arrayArticulo[0]['id'];
+                    me.precio = me.arrayArticulo[0]['precio'];
+                    me.stock = me.arrayArticulo[0]['stock'];
                 } else {
                     me.articulo = 'No existe artículo';
                     me.idarticulo = 0;
@@ -63724,7 +63727,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         listarArticulo: function listarArticulo(buscar, criterio) {
 
             var me = this;
-            var url = '/articulo/listarArticulo?buscar=' + buscar + '&criterio=' + criterio;
+            var url = '/articulo/listarArticuloVenta?buscar=' + buscar + '&criterio=' + criterio;
             axios.get(url).then(function (response) {
                 var respuesta = response.data;
                 me.arrayArticulo = respuesta.articulos.data;
@@ -67240,7 +67243,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 return;
             }
             var me = this;
-            axios.post('/cliente/registrar', {
+            axios.post('/clientes/registrar', {
                 'nombre': this.nombre,
                 'tipo_documento': this.tipo_documento,
                 'num_documento': this.num_documento,
@@ -67260,7 +67263,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 return;
             }
             var me = this;
-            axios.put('/cliente/actualizar', {
+            axios.put('/clientes/actualizar', {
                 'nombre': this.nombre,
                 'tipo_documento': this.tipo_documento,
                 'num_documento': this.num_documento,
@@ -67302,7 +67305,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
             switch (modelo) {
-                case "persona":
+                case "cliente":
                     {
                         switch (accion) {
                             case "registrar":
@@ -67367,7 +67370,7 @@ var render = function() {
               attrs: { type: "button" },
               on: {
                 click: function($event) {
-                  return _vm.abrirModal("persona", "registrar")
+                  return _vm.abrirModal("cliente", "registrar")
                 }
               }
             },

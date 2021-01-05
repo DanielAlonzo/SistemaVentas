@@ -568,6 +568,7 @@
                 articulo: '',
                 precio: 0,
                 cantidad: 0,
+                stock: 0,
                
                 iddescuento: 0,
                 tipodescuento: '',
@@ -629,15 +630,15 @@
                     console.log(error);
                 });
             },
-            seleccionarProveedor(search,loading){
+            seleccionarCliente(search,loading){
                 let me=this;
                 loading(true)
-                var url= '/proveedor/seleccionarProveedor?filtro='+search;
+                var url= '/clientes/seleccionarCliente?filtro='+search;
                 axios.get(url).then(function (response) {
                     //console.log(response);
                     let respuesta= response.data;
                     q: search
-                    me.arrayProveedor = respuesta.proveedores;
+                    me.arrayCliente = respuesta.clientes;
                     loading(false)
                 })
                 .catch(function (error) {
@@ -657,14 +658,14 @@
                     console.log(error);
                 });
             },
-            getDatosProveedor(val1){
+            getDatosCliente(val1){
                 let me = this;
                 me.loading = true;
-                me.idproveedor = val1.id;
+                me.idcliente = val1.id;
             },
              buscarArticulo(){
                 let me=this;
-                var url= '/articulo/buscarArticulo?filtro=' + me.codigo;
+                var url= '/articulo/buscarArticuloVenta?filtro=' + me.codigo;
 
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
@@ -673,6 +674,8 @@
                     if (me.arrayArticulo.length>0){
                         me.articulo=me.arrayArticulo[0]['nombre'];
                         me.idarticulo=me.arrayArticulo[0]['id'];
+                        me.precio=me.arrayArticulo[0]['precio'];
+                        me.stock=me.arrayArticulo[0]['stock'];
                     }
                     else{
                         me.articulo='No existe artículo';
@@ -783,7 +786,7 @@
             listarArticulo (buscar,criterio){
 
                 let me=this;
-                var url= '/articulo/listarArticulo?buscar='+ buscar + '&criterio='+ criterio;
+                var url= '/articulo/listarArticuloVenta?buscar='+ buscar + '&criterio='+ criterio;
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
                     me.arrayArticulo = respuesta.articulos.data;

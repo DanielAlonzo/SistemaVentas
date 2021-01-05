@@ -9,7 +9,7 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="icon-notebook"></i> Clientes
-                        <button type="button" style="margin-left: 10px" @click="abrirModal('persona','registrar')" class="btn btn-info" >
+                        <button type="button" style="margin-left: 10px" @click="abrirModal('cliente','registrar')" class="btn btn-info" >
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
                     </div>
@@ -248,7 +248,7 @@
                     return;
                 }
                 let me = this;
-                axios.post('/cliente/registrar', {
+                axios.post('/clientes/registrar', {
                     'nombre': this.nombre,
                     'tipo_documento': this.tipo_documento,
                     'num_documento': this.num_documento,
@@ -270,7 +270,7 @@
                     return;
                 }
                 let me = this;
-                axios.put('/cliente/actualizar', {
+                axios.put('/clientes/actualizar', {
                     'nombre': this.nombre,
                     'tipo_documento': this.tipo_documento,
                     'num_documento': this.num_documento,
@@ -313,7 +313,7 @@
             },
             abrirModal(modelo, accion, data = []){
                 switch(modelo){
-                    case "persona":{
+                    case "cliente":{
                         switch(accion){
                             case "registrar":
                                 {

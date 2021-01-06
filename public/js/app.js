@@ -63463,17 +63463,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -63485,7 +63474,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             idcliente: 0,
             cliente: '',
             tipo_comprobante: 'Ticket',
-            serie_comprobante: '',
+            serie_comprobante: '001-006',
             num_comprobante: '',
             impuesto: 0.18,
             total: 0.0,
@@ -63525,6 +63514,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             iddescuento: 0,
             tipodescuento: '',
+            descuento: 0,
             exonerado: 0,
             exento: 0,
             gravado_quince: 0,
@@ -63565,6 +63555,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         calcularTotal: function calcularTotal() {
             var resultado = 0.0;
+            // var totalParcial =0.0;//Nuevo
+            // var TotalImpuesto = 0.0;//Nuevo
+            // totalImpuesto= resultado - this.arrayVenta.impuesto;//Nuevo
+            // totalParcial= resultado-(this.arrayDetalle.descuento*100)-totalImpuesto;//Nuevo
+
+            for (var i = 0; i < this.arrayDetalle.length; i++) {
+                resultado = resultado + (this.arrayDetalle[i].precio * this.arrayDetalle[i].cantidad - this.arrayDetalle[i].precio * this.arrayDetalle[i].cantidad * this.descuento);
+            }return resultado;
+        }, calcularImpuesto: function calcularImpuesto() {
+            var resultado = 0.0;
+            // var totalParcial =0.0;//Nuevo
+            // var TotalImpuesto = 0.0;//Nuevo
+            // totalImpuesto= resultado - this.arrayVenta.impuesto;//Nuevo
+            // totalParcial= resultado-(this.arrayDetalle.descuento*100)-totalImpuesto;//Nuevo
+            //(total*impuesto)/(1+impuesto)
+
+            for (var i = 0; i < this.arrayDetalle.length; i++) {
+                resultado = resultado + this.arrayDetalle[i].precio * this.arrayDetalle[i].cantidad * this.impuesto / (1 + this.impuesto);
+            }return resultado;
+        },
+        calcular: function calcular() {
+            var resultado = 0.0;
+            // var totalParcial =0.0;//Nuevo
+            // var TotalImpuesto = 0.0;//Nuevo
+            // totalImpuesto= resultado - this.arrayVenta.impuesto;//Nuevo
+            // totalParcial= resultado-(this.arrayDetalle.descuento*100)-totalImpuesto;//Nuevo
+
             for (var i = 0; i < this.arrayDetalle.length; i++) {
                 resultado = resultado + this.arrayDetalle[i].precio * this.arrayDetalle[i].cantidad;
             }return resultado;
@@ -63675,19 +63692,45 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     });
                 } else {
 
-                    me.arrayDetalle.push({
-                        idarticulo: me.idarticulo,
-                        articulo: me.articulo,
-                        cantidad: me.cantidad,
-                        precio: me.precio
-                        // exento: me.exento
-                    });
-                    me.codigo = "";
-                    me.idarticulo = 0;
-                    me.articulo = "";
-                    me.cantidad = 0;
-                    me.precio = 0;
-                    // me.exento=0;
+                    if (me.cantidad > me.stock) {
+                        var _swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: 'btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                            },
+                            buttonsStyling: false
+                        });
+                        _swalWithBootstrapButtons.fire({
+                            title: 'Error!',
+                            icon: 'error',
+                            text: 'No hay suficientes unidades disponibles de este producto',
+
+                            confirmButtonText: 'Aceptar'
+
+                        });
+                    } else {
+                        me.arrayDetalle.push({
+                            idarticulo: me.idarticulo,
+                            articulo: me.articulo,
+                            cantidad: me.cantidad,
+                            precio: me.precio,
+                            exento: me.exento,
+                            exonerado: me.exonerado,
+                            gravado_quince: me.gravado_quince,
+                            gravado_dieciocho: me.gravado_dieciocho,
+                            stock: me.stock
+                        });
+                        me.codigo = "";
+                        me.idarticulo = 0;
+                        me.articulo = "";
+                        me.cantidad = 0;
+                        me.precio = 0;
+                        me.exento = 0;
+                        me.exonerado = 0;
+                        me.gravado_quince = 0;
+                        me.gravado_dieciocho = 0;
+                        me.stock = 0;
+                    }
                 }
             }
         },
@@ -63718,8 +63761,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     idarticulo: data['id'],
                     articulo: data['nombre'],
                     cantidad: 1,
-                    precio: 1
+                    precio: data['precio'],
                     // exento: 1
+                    stock: data['stock']
 
                 });
             }
@@ -63756,7 +63800,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.listarIngreso(1, '', 'num_comprobante');
                 me.idproveedor = 0;
                 me.tipo_comprobante = 'Ticket';
-                me.serie_comprobante = '';
+                me.serie_comprobante = '001-006';
                 me.num_comprobante = '';
                 me.impuesto = 0.18;
                 me.total = 0.0;
@@ -63815,7 +63859,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             me.listado = 0;
             me.idproveedor = 0;
             me.tipo_comprobante = 'Ticket';
-            me.serie_comprobante = '';
+            me.serie_comprobante = '001-006';
             me.num_comprobante = '';
             me.impuesto = 0.18;
             me.total = 0.0;
@@ -64399,7 +64443,7 @@ var render = function() {
                             }
                           ],
                           staticClass: "form-control",
-                          attrs: { type: "text", placeholder: "000x" },
+                          attrs: { type: "text" },
                           domProps: { value: _vm.serie_comprobante },
                           on: {
                             input: function($event) {
@@ -64577,7 +64621,7 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-md-2" }, [
+                    _c("div", { staticClass: "col-md-4" }, [
                       _c("div", { staticClass: "form-group" }, [
                         _c("label", [
                           _vm._v("Precio "),
@@ -64622,7 +64666,7 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-md-2" }, [
+                    _c("div", { staticClass: "col-md-4" }, [
                       _c("div", { staticClass: "form-group" }, [
                         _c("label", [
                           _vm._v("Cantidad "),
@@ -64665,9 +64709,11 @@ var render = function() {
                           }
                         })
                       ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-md-2" }, [
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group row border" }, [
+                    _c("div", { staticClass: "col-md-4" }, [
                       _c("div", { staticClass: "form-group" }, [
                         _c("label", [_vm._v("Descuento")]),
                         _vm._v(" "),
@@ -64725,121 +64771,9 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
-                    _vm._m(2)
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group row border" }, [
-                    _c("div", { staticClass: "col-md-3" }, [
-                      _c("div", { staticClass: "form-group" }, [
-                        _c("label", [_vm._v("Importe gravado exonerado")]),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.exonerado,
-                              expression: "exonerado"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { type: "number", value: "0" },
-                          domProps: { value: _vm.exonerado },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.exonerado = $event.target.value
-                            }
-                          }
-                        })
-                      ])
-                    ]),
+                    _vm._m(2),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-md-3" }, [
-                      _c("div", { staticClass: "form-group" }, [
-                        _c("label", [_vm._v("Importe gravado exento")]),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.exento,
-                              expression: "exento"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { type: "number", value: "0" },
-                          domProps: { value: _vm.exento },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.exento = $event.target.value
-                            }
-                          }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-md-2" }, [
-                      _c("div", { staticClass: "form-group" }, [
-                        _c("label", [_vm._v("Importe gravado 15%")]),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.gravado_quince,
-                              expression: "gravado_quince"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { type: "number", value: "0" },
-                          domProps: { value: _vm.gravado_quince },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.gravado_quince = $event.target.value
-                            }
-                          }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-md-2" }, [
-                      _c("div", { staticClass: "form-group" }, [
-                        _c("label", [_vm._v("Importe gravado 18%")]),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.gravado_dieciocho,
-                              expression: "gravado_dieciocho"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { type: "number", value: "0" },
-                          domProps: { value: _vm.gravado_dieciocho },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.gravado_dieciocho = $event.target.value
-                            }
-                          }
-                        })
-                      ])
-                    ]),
+                    _vm._m(3),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-md-2" }, [
                       _c("div", { staticClass: "form-group" }, [
@@ -64869,7 +64803,7 @@ var render = function() {
                             "table table-bordered table-striped table-sm"
                         },
                         [
-                          _vm._m(3),
+                          _vm._m(4),
                           _vm._v(" "),
                           _vm.arrayDetalle.length
                             ? _c(
@@ -64938,6 +64872,31 @@ var render = function() {
                                       ]),
                                       _vm._v(" "),
                                       _c("td", [
+                                        _c(
+                                          "span",
+                                          {
+                                            directives: [
+                                              {
+                                                name: "show",
+                                                rawName: "v-show",
+                                                value:
+                                                  detalle.cantidad >
+                                                  detalle.stock,
+                                                expression:
+                                                  "detalle.cantidad>detalle.stock"
+                                              }
+                                            ],
+                                            staticStyle: { color: "red" }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "Stock: " +
+                                                _vm._s(detalle.stock) +
+                                                " "
+                                            )
+                                          ]
+                                        ),
+                                        _vm._v(" "),
                                         _c("input", {
                                           directives: [
                                             {
@@ -64977,9 +64936,58 @@ var render = function() {
                                     ])
                                   }),
                                   _vm._v(" "),
-                                  _vm._m(4),
-                                  _vm._v(" "),
-                                  _vm._m(5),
+                                  _c(
+                                    "tr",
+                                    {
+                                      staticStyle: {
+                                        "background-color": "#b0e5f5"
+                                      }
+                                    },
+                                    [
+                                      _vm._m(5),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _c(
+                                          "span",
+                                          {
+                                            directives: [
+                                              {
+                                                name: "show",
+                                                rawName: "v-show",
+                                                value: _vm.descuento > 0.5,
+                                                expression: "descuento>0.50"
+                                              }
+                                            ],
+                                            staticStyle: { color: "red" }
+                                          },
+                                          [_vm._v("Descuento Inválido ")]
+                                        ),
+                                        _vm._v(" "),
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: _vm.descuento,
+                                              expression: "descuento"
+                                            }
+                                          ],
+                                          staticClass: "form-control",
+                                          attrs: { type: "number" },
+                                          domProps: { value: _vm.descuento },
+                                          on: {
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.descuento =
+                                                $event.target.value
+                                            }
+                                          }
+                                        })
+                                      ])
+                                    ]
+                                  ),
                                   _vm._v(" "),
                                   _vm._m(6),
                                   _vm._v(" "),
@@ -64987,28 +64995,7 @@ var render = function() {
                                   _vm._v(" "),
                                   _vm._m(8),
                                   _vm._v(" "),
-                                  _c(
-                                    "tr",
-                                    {
-                                      staticStyle: {
-                                        "background-color": "#CEECF5"
-                                      }
-                                    },
-                                    [
-                                      _vm._m(9),
-                                      _vm._v(" "),
-                                      _c("td", [
-                                        _vm._v(
-                                          "L. " +
-                                            _vm._s(
-                                              (_vm.totalParcial = (
-                                                _vm.total - _vm.totalImpuesto
-                                              ).toFixed(2))
-                                            )
-                                        )
-                                      ])
-                                    ]
-                                  ),
+                                  _vm._m(9),
                                   _vm._v(" "),
                                   _c(
                                     "tr",
@@ -65024,9 +65011,10 @@ var render = function() {
                                         _vm._v(
                                           "L. " +
                                             _vm._s(
-                                              (_vm.totalImpuesto = (
-                                                (_vm.total * _vm.impuesto) /
-                                                (1 + _vm.impuesto)
+                                              (_vm.totalParcial = (
+                                                _vm.calcular -
+                                                _vm.calcular * _vm.descuento -
+                                                _vm.totalImpuesto
                                               ).toFixed(2))
                                             )
                                         )
@@ -65048,7 +65036,35 @@ var render = function() {
                                         _vm._v(
                                           "L. " +
                                             _vm._s(
-                                              (_vm.total = _vm.calcularTotal)
+                                              (_vm.totalImpuesto = (
+                                                _vm.calcular * _vm.impuesto
+                                              ).toFixed(2))
+                                            )
+                                        )
+                                      ])
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "tr",
+                                    {
+                                      staticStyle: {
+                                        "background-color": "#CEECF5"
+                                      }
+                                    },
+                                    [
+                                      _vm._m(12),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v(
+                                          "L. " +
+                                            _vm._s(
+                                              (_vm.total =
+                                                _vm.calcular -
+                                                _vm.calcular * _vm.descuento -
+                                                _vm.totalImpuesto +
+                                                _vm.calcular *
+                                                  _vm.impuesto).toFixed(2)
                                             )
                                         )
                                       ])
@@ -65057,7 +65073,7 @@ var render = function() {
                                 ],
                                 2
                               )
-                            : _c("tbody", [_vm._m(12)])
+                            : _c("tbody", [_vm._m(13)])
                         ]
                       )
                     ])
@@ -65164,7 +65180,7 @@ var render = function() {
                             "table table-bordered table-striped table-sm"
                         },
                         [
-                          _vm._m(13),
+                          _vm._m(14),
                           _vm._v(" "),
                           _vm.arrayDetalle.length
                             ? _c(
@@ -65210,7 +65226,7 @@ var render = function() {
                                       }
                                     },
                                     [
-                                      _vm._m(14),
+                                      _vm._m(15),
                                       _vm._v(" "),
                                       _c("td", [
                                         _vm._v(
@@ -65233,7 +65249,7 @@ var render = function() {
                                       }
                                     },
                                     [
-                                      _vm._m(15),
+                                      _vm._m(16),
                                       _vm._v(" "),
                                       _c("td", [
                                         _vm._v(
@@ -65256,7 +65272,7 @@ var render = function() {
                                       }
                                     },
                                     [
-                                      _vm._m(16),
+                                      _vm._m(17),
                                       _vm._v(" "),
                                       _c("td", [
                                         _vm._v("L. " + _vm._s(_vm.total))
@@ -65266,7 +65282,7 @@ var render = function() {
                                 ],
                                 2
                               )
-                            : _c("tbody", [_vm._m(17)])
+                            : _c("tbody", [_vm._m(18)])
                         ]
                       )
                     ])
@@ -65464,7 +65480,7 @@ var render = function() {
                       staticClass: "table table-bordered table-striped table-sm"
                     },
                     [
-                      _vm._m(18),
+                      _vm._m(19),
                       _vm._v(" "),
                       _c(
                         "tbody",
@@ -65631,13 +65647,28 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-2" }, [
+    return _c("div", { staticClass: "col-md-3" }, [
       _c("div", { staticClass: "form-group" }, [
         _c("label", [_vm._v("N° Compra exonerada")]),
         _vm._v(" "),
         _c("input", {
           staticClass: "form-control",
           attrs: { type: "text", value: "0", placeholder: "Compra exonerada" }
+        })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-3" }, [
+      _c("div", { staticClass: "form-group" }, [
+        _c("label", [_vm._v("N° Compra exenta")]),
+        _vm._v(" "),
+        _c("input", {
+          staticClass: "form-control",
+          attrs: { type: "text", value: "0", placeholder: "Compra exenta" }
         })
       ])
     ])
@@ -65664,9 +65695,17 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("td", { attrs: { colspan: "4", align: "right" } }, [
+      _c("strong", [_vm._v("Descuento:")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("tr", { staticStyle: { "background-color": "#b0e5f5" } }, [
       _c("td", { attrs: { colspan: "4", align: "right" } }, [
-        _c("strong", [_vm._v("Descuento:")])
+        _c("strong", [_vm._v("Importe Exonerado:")])
       ]),
       _vm._v(" "),
       _c("td", [
@@ -65680,22 +65719,12 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("tr", { staticStyle: { "background-color": "#b0e5f5" } }, [
       _c("td", { attrs: { colspan: "4", align: "right" } }, [
-        _c("strong", [_vm._v("Importe Exonerado:")])
-      ]),
-      _vm._v(" "),
-      _c("td")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticStyle: { "background-color": "#b0e5f5" } }, [
-      _c("td", { attrs: { colspan: "4", align: "right" } }, [
         _c("strong", [_vm._v("Importe Exento:")])
       ]),
       _vm._v(" "),
-      _c("td")
+      _c("td", [
+        _c("input", { staticClass: "form-control", attrs: { type: "number" } })
+      ])
     ])
   },
   function() {
@@ -65707,7 +65736,9 @@ var staticRenderFns = [
         _c("strong", [_vm._v("Gravado 15%:")])
       ]),
       _vm._v(" "),
-      _c("td")
+      _c("td", [
+        _c("input", { staticClass: "form-control", attrs: { type: "number" } })
+      ])
     ])
   },
   function() {
@@ -65719,7 +65750,9 @@ var staticRenderFns = [
         _c("strong", [_vm._v("Gravado 18%:")])
       ]),
       _vm._v(" "),
-      _c("td")
+      _c("td", [
+        _c("input", { staticClass: "form-control", attrs: { type: "number" } })
+      ])
     ])
   },
   function() {

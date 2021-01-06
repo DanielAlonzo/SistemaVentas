@@ -21,10 +21,10 @@
                                 <a class="nav-link" href="#"><i class="icon-notebook"></i> Personas</a>
                             </li>
                             <li @click="menu=8" class="nav-item">
-                                <a class="nav-link" href="#"><i class="icon-notebook"></i> Descuentos y Rebajas</a>
+                                <a class="nav-link" href="#"><i class="fa fa-percent"></i> Descuentos y Rebajas</a>
                             </li>
                             <li @click="menu=9" class="nav-item">
-                                <a class="nav-link" href="#"><i class="icon-notebook"></i>Salidas</a>
+                                <a class="nav-link" href="#"><i class="fa fa-external-link"></i>Salidas</a>
                             </li>
                         </ul>
                     </li>

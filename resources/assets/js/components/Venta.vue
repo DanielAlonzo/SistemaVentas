@@ -127,7 +127,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Serie Comprobante</label>
-                                    <input type="text" class="form-control" v-model="serie_comprobante" placeholder="000x">
+                                    <input type="text" class="form-control" v-model="serie_comprobante" >
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -157,19 +157,25 @@
                                     </div>                                         
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Precio <span style="color:red" v-show="precio==0">(Ingrese precio*)</span></label>
                                     <input type="number" value="0" step="any" class="form-control" v-model="precio">
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Cantidad <span style="color:red" v-show="cantidad==0">(Ingrese cantidad*)</span></label>
                                     <input type="number" value="0" class="form-control" v-model="cantidad">
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                        
+                            
+                        </div>
+
+                        <div class="form-group row border">
+                             
+                                <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Descuento</label>
                                      <select class="form-control" v-model="iddescuento">
@@ -180,41 +186,20 @@
                                         </select>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                  <div class="form-group">
                                       <label>N° Compra exonerada</label>
                                       <input type="text" value="0" class="form-control" placeholder="Compra exonerada">
                                  </div>
                              </div>
-                            
-                        </div>
 
-                        <div class="form-group row border">
-                             
                              <div class="col-md-3">
                                  <div class="form-group">
-                                     <label>Importe gravado exonerado</label>
-                                     <input type="number" value="0" class="form-control" v-model="exonerado">
+                                      <label>N° Compra exenta</label>
+                                      <input type="text" value="0" class="form-control" placeholder="Compra exenta">
                                  </div>
                              </div>
-                             <div class="col-md-3">
-                                 <div class="form-group">
-                                     <label>Importe gravado exento</label>
-                                     <input type="number" value="0" class="form-control" v-model="exento">
-                                 </div>
-                             </div>
-                             <div class="col-md-2">
-                                 <div class="form-group">
-                                     <label>Importe gravado 15%</label>
-                                     <input type="number" value="0" class="form-control" v-model="gravado_quince">
-                                 </div>
-                             </div>
-                             <div class="col-md-2">
-                                 <div class="form-group">
-                                     <label>Importe gravado 18%</label>
-                                     <input type="number" value="0" class="form-control" v-model="gravado_dieciocho">
-                                 </div>
-                             </div>
+
                              <div class="col-md-2">
                                 <div class="form-group">
                                     <button @click="agregarDetalle()" class="btn btn-success form-control btnagregar"><i class="icon-plus"></i></button>
@@ -247,6 +232,7 @@
                                                 <input v-model="detalle.precio" type="number"  class="form-control">
                                             </td>
                                             <td>
+                                                <span style="color:red;" v-show="detalle.cantidad>detalle.stock">Stock: {{detalle.stock}} </span>
                                                 <input v-model="detalle.cantidad" type="number"  class="form-control">
                                             </td>
                                             
@@ -257,55 +243,58 @@
                                         </tr>
                                         <!-- TODO: Arreglar esto! solo sera texto, NO OLVIDAR AGREGAR EL 'V-FOR' PARA QUE FUNCIONE  -->
                                         <!-- FIXME:  -->
-                                        <tr style="background-color: #b0e5f5;">
+                                        <tr  style="background-color: #b0e5f5;">
                                             <td colspan="4" align="right"><strong>Descuento:</strong></td>
                                             <td>
-                                                <input  type="number"  class="form-control">
+                                                <span style="color:red;" v-show="descuento>0.50">Descuento Inválido </span>
+                                                <input v-model="descuento" type="number"  class="form-control">
                                             </td>
 
                                             
                                         </tr> 
                                          <!-- FIXME:  -->
-                                        <tr style="background-color: #b0e5f5;">
+                                        <tr  style="background-color: #b0e5f5;">
                                             <td colspan="4" align="right"><strong>Importe Exonerado:</strong></td>
                                             <td>
-                                                <!-- <input v-model="detalle.exonerado" type="number"  class="form-control"> -->
+                                                <input  type="number"  class="form-control">
                                             </td>
                                         </tr> 
                                              <!-- FIXME:  -->
                                         <tr style="background-color: #b0e5f5;">
                                             <td colspan="4" align="right"><strong>Importe Exento:</strong></td>
                                              <td>
-                                                <!-- <input v-model="detalle.exento" type="number"  class="form-control"> -->
+                                                <input  type="number"  class="form-control">
                                             </td>
                                         </tr>  
                                              <!-- FIXME:  -->
                                         <tr style="background-color: #b0e5f5;">
                                                 <td colspan="4" align="right"><strong>Gravado 15%:</strong></td>                                        
                                             <td>
-                                                <!-- <input v-model="detalle.gravado_quince" type="number"  class="form-control"> -->
+                                                <input  type="number"  class="form-control">
                                             </td>
                                         </tr>
                                              <!-- FIXME:  -->
                                         <tr style="background-color: #b0e5f5;"> 
                                             <td colspan="4" align="right"><strong>Gravado 18%:</strong></td>
                                             <td>
-                                                <!-- <input v-model="detalle.gravado_dieciocho" type="number"  class="form-control"> -->
+                                                <input  type="number"  class="form-control">
                                             </td>
                                             
                                         </tr>
-                                       
+                                       <!-- FIXME: ARREGLAR ESTOS TOTALES -->
                                         <tr style="background-color: #CEECF5;">
                                             <td colspan="4" align="right"><strong>Total Parcial:</strong></td>
-                                            <td>L. {{totalParcial=(total-totalImpuesto).toFixed(2)}}</td>
+                                            <td>L. {{totalParcial=((calcular-(calcular*descuento))-totalImpuesto).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
+                                            
                                             <td colspan="4" align="right"><strong>Total Impuesto:</strong></td>
-                                            <td>L. {{totalImpuesto=((total*impuesto)/(1+impuesto)).toFixed(2)}}</td>
+                                            
+                                            <td >L. {{totalImpuesto=(calcular*impuesto).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
                                             <td colspan="4" align="right"><strong>Total Neto:</strong></td>
-                                            <td>L. {{total=calcularTotal}}</td>
+                                            <td>L. {{(total=(((calcular-(calcular*descuento))-totalImpuesto)+(calcular*impuesto))).toFixed(2)}}</td>
                                         </tr>
                                     </tbody>  
                                     <tbody v-else>
@@ -532,7 +521,7 @@
                 idcliente:0,
                 cliente:'',
                 tipo_comprobante : 'Ticket',
-                serie_comprobante : '',
+                serie_comprobante : '001-006',
                 num_comprobante : '',
                 impuesto: 0.18,
                 total:0.0,
@@ -572,6 +561,7 @@
                
                 iddescuento: 0,
                 tipodescuento: '',
+                descuento: 0,
                 exonerado: 0,
                 exento: 0,
                 gravado_quince: 0,
@@ -612,6 +602,33 @@
             },
             calcularTotal: function(){
                 var resultado = 0.0;
+                // var totalParcial =0.0;//Nuevo
+                // var TotalImpuesto = 0.0;//Nuevo
+               // totalImpuesto= resultado - this.arrayVenta.impuesto;//Nuevo
+               // totalParcial= resultado-(this.arrayDetalle.descuento*100)-totalImpuesto;//Nuevo
+
+                for(var i=0; i<this.arrayDetalle.length;i++){
+                    resultado=resultado+((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)-((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)*this.descuento))
+                }return resultado;
+            },calcularImpuesto: function(){
+                var resultado = 0.0;
+                // var totalParcial =0.0;//Nuevo
+                // var TotalImpuesto = 0.0;//Nuevo
+               // totalImpuesto= resultado - this.arrayVenta.impuesto;//Nuevo
+               // totalParcial= resultado-(this.arrayDetalle.descuento*100)-totalImpuesto;//Nuevo
+               //(total*impuesto)/(1+impuesto)
+
+                for(var i=0; i<this.arrayDetalle.length;i++){
+                    resultado=resultado+(((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)*(this.impuesto))/(1+this.impuesto))
+                }return resultado;
+            },
+            calcular: function(){
+                var resultado = 0.0;
+                // var totalParcial =0.0;//Nuevo
+                // var TotalImpuesto = 0.0;//Nuevo
+               // totalImpuesto= resultado - this.arrayVenta.impuesto;//Nuevo
+               // totalParcial= resultado-(this.arrayDetalle.descuento*100)-totalImpuesto;//Nuevo
+
                 for(var i=0; i<this.arrayDetalle.length;i++){
                     resultado=resultado+(this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)
                 }return resultado;
@@ -731,19 +748,47 @@
                         })
                     }else{
 
-                        me.arrayDetalle.push({
+                       if(me.cantidad > me.stock){
+                           const swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: 'btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                            },
+                            buttonsStyling: false
+                            })
+                            swalWithBootstrapButtons.fire({
+                                title: 'Error!',
+                                icon: 'error',
+                                text: 'No hay suficientes unidades disponibles de este producto',
+                            
+                                confirmButtonText: 'Aceptar',
+                            
+                                
+                            })
+                       }else{
+                            me.arrayDetalle.push({
                             idarticulo: me.idarticulo,
                             articulo: me.articulo,
                             cantidad: me.cantidad,
                             precio: me.precio,
-                           // exento: me.exento
-                        });
-                        me.codigo="";
-                        me.idarticulo=0;
-                        me.articulo="";
-                        me.cantidad=0;
-                        me.precio=0;
-                       // me.exento=0;
+                            exento: me.exento,
+                            exonerado: me.exonerado,
+                            gravado_quince: me.gravado_quince,
+                            gravado_dieciocho: me.gravado_dieciocho,
+                            stock: me.stock
+                            });
+                            me.codigo="";
+                            me.idarticulo=0;
+                            me.articulo="";
+                            me.cantidad=0;
+                            me.precio=0;
+                            me.exento=0;
+                            me.exonerado=0;
+                            me.gravado_quince=0;
+                            me.gravado_dieciocho=0;
+                            me.stock=0;
+
+                       }
                     }    
 
                     
@@ -777,8 +822,9 @@
                             idarticulo: data['id'],
                             articulo: data['nombre'],
                             cantidad: 1,
-                            precio: 1,
+                            precio: data['precio'],
                            // exento: 1
+                           stock: data['stock']
 
                         });
                     }    
@@ -817,7 +863,7 @@
                     me.listarIngreso(1,'','num_comprobante');
                     me.idproveedor=0;
                     me.tipo_comprobante='Ticket';
-                    me.serie_comprobante='';
+                    me.serie_comprobante='001-006';
                     me.num_comprobante='';
                     me.impuesto=0.18;
                     me.total=0.0;
@@ -877,7 +923,7 @@
                 me.listado=0;
                 me.idproveedor=0;
                 me.tipo_comprobante='Ticket';
-                me.serie_comprobante='';
+                me.serie_comprobante='001-006';
                 me.num_comprobante='';
                 me.impuesto=0.18;
                 me.total=0.0;

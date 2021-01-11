@@ -27,6 +27,7 @@ Vue.component('venta', require('./components/Venta.vue'));
 Vue.component('descuento', require('./components/Descuento.vue'));
 Vue.component('salida', require('./components/Salida.vue'));
 Vue.component('clientes', require('./components/Clientes.vue'));
+Vue.component('isv', require('./components/Isv.vue'));
 
 const app = new Vue({
     el: '#app',

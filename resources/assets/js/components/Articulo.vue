@@ -21,6 +21,7 @@
                                 <div class="input-group">
                                     <select class="form-control col-md-3" v-model="criterio">
                                       <option value="nombre">Nombre</option>
+                                      <option value="nombre_categoria">Categoría </option>
                                       <option value="descripcion">Descripción</option>
                                      
                                     </select>
@@ -37,8 +38,10 @@
                                     <th>Código</th>
                                     <th>Nombre</th>
                                     <th>Categoría</th>
+                                    <th>Costo</th>
                                     <th>Precio</th>
                                     <th>Stock</th>
+                                    <th>ISV</th>
                                     <th>Descripción</th>
                                     <th>Estado</th>
                                     <th>Opciones</th>
@@ -51,8 +54,10 @@
                                     <td v-text="articulo.codigo"></td>
                                     <td v-text="articulo.nombre"></td>
                                     <td v-text="articulo.nombre_categoria"></td>
+                                    <td v-text="articulo.costo"></td>
                                     <td v-text="articulo.precio"></td>
                                     <td v-text="articulo.stock"></td>
+                                    <td v-text="articulo.tipo_isv"></td>
                                     <td v-text="articulo.descripcion"></td>
                                     <td>
                                         <div v-if="articulo.estado">
@@ -142,6 +147,12 @@
                                         <input type="text" v-model="nombre" class="form-control" placeholder="Nombre del artículo">
                                     </div>
                                 </div>
+                                 <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="email-input">Costo</label>
+                                    <div class="col-md-9">
+                                        <input type="number" v-model="costo" class="form-control" placeholder="">
+                                    </div>
+                                </div>
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="email-input">Precio</label>
                                     <div class="col-md-9">
@@ -154,6 +165,32 @@
                                         <input type="number" v-model="stock" class="form-control" placeholder="">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="email-input">ISV</label>
+                                    <div class="col-md-9">
+                                        <!-- <input type="number"  class="form-control" placeholder=""> -->
+                                        <input type="radio"   id="si" name="si" v-model="isv" value="1" checked>
+                                            <label for="si">Si</label>
+                                        <input type="radio" style="padding-left:10px" id="no" name="no" v-model="isv" value="0" checked>
+                                            <label for="no">No</label>    
+              
+                                        
+                                    </div>
+                                </div>
+                                 <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Tipo ISV</label>
+                                    <div class="col-md-9">
+                                        <span style="color:red;" v-if="isv<1">Elija 0.0 de impuesto </span>
+                                        <select class="form-control" v-model="tipoisv" >
+                                            <option value="0" disabled>
+                                                Seleccionar
+                                            </option>
+                                            <option v-for="isv in arrayIsv" :key="isv.id" :value="isv.id" v-text="isv.impuesto"></option>
+                                        </select>
+                                        
+                                    </div>
+                                </div>
+                                
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
                                     <div class="col-md-9">
@@ -193,8 +230,12 @@ import VueBarcode from 'vue-barcode';
                 nombre_categoria: '',
                 codigo: '',
                 nombre: '',
+                costo: 0,
                 precio: 0,
                 stock: 0,
+                isv: 1,
+                tipoisv: 0,
+                tipo_isv: 0.0,
                 descripcion: '',
                 arrayArticulo :[],
                 modal : 0,
@@ -213,7 +254,8 @@ import VueBarcode from 'vue-barcode';
                 offset : 3,
                 criterio : 'nombre',
                 buscar : '',
-                arrayCategoria:[]
+                arrayCategoria:[],
+                arrayIsv:[]
             }
             
         },
@@ -277,6 +319,19 @@ import VueBarcode from 'vue-barcode';
                     console.log(error);
                 });
             },
+            seleccionarIsv(){
+                  let me=this;
+                var url= '/isv/seleccionarIsv';
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;
+                    me.arrayIsv = respuesta.isvs;
+                    
+                    //console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
             cambiarPagina(page, buscar, criterio){
                 let me = this;
                 me.pagination.current_page = page; //actualiza la pagina actual
@@ -295,6 +350,9 @@ import VueBarcode from 'vue-barcode';
                     'nombre': this.nombre,
                     'stock': this.stock,
                     'precio': this.precio,
+                    'costo': this.costo,
+                    'isv': this.isv,
+                    'tipoisv': this.tipoisv,
                     'descripcion': this.descripcion
                 }).then(function (response) {
                     me.cerrarModal();
@@ -318,6 +376,9 @@ import VueBarcode from 'vue-barcode';
                     'nombre': this.nombre,
                     'stock': this.stock,
                     'precio': this.precio,
+                    'costo': this.costo,
+                    'isv': this.isv,
+                    'tipoisv': this.tipoisv,
                     'descripcion': this.descripcion,
                     'id':this.articulo_id
                 }).then(function (response) {
@@ -439,8 +500,11 @@ import VueBarcode from 'vue-barcode';
                 this.nombre_categoria='';
                 this.codigo='';
                 this.nombre = '';
+                this.costo=0;
                 this.precio=0;
                 this.stock=0;
+                this.isv=1;
+                this.tipoisv=0;
                 this.descripcion = '';
                 this.errorArticulo=0;
             },
@@ -458,7 +522,10 @@ import VueBarcode from 'vue-barcode';
                                     this.codigo='';
                                     this.nombre = '';
                                     this.precio=0;
+                                    this.costo=0;
                                     this.stock=0;
+                                    this.isv=1;
+                                    this.tipoisv=0;
                                     this.descripcion = '';
                                     this.tipoAccion = 1
                                     break;
@@ -474,6 +541,9 @@ import VueBarcode from 'vue-barcode';
                                    this.codigo=data['codigo'];
                                    this.nombre = data['nombre'];
                                    this.precio=data['precio'];
+                                   this.costo=data['costo'];
+                                   this.isv=data['isv'];
+                                   this.tipoisv=data['tipoisv'];
                                    this.stock=data['stock'];
                                    this.descripcion = data['descripcion'];
                                    break;
@@ -483,6 +553,7 @@ import VueBarcode from 'vue-barcode';
                     }
                 }
                 this.seleccionarCategoria();
+                this.seleccionarIsv();
             }
         },
         mounted() {

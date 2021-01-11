@@ -17,17 +17,18 @@ class ArticuloController extends Controller
        
         if($buscar==''){
             $articulos = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
+            ->join('isv','articulos.tipoisv','=','isv.id')
             ->select('articulos.id','articulos.idcategoria','articulos.codigo',
-            'articulos.nombre', 'categorias.nombre as nombre_categoria',
-            'articulos.precio','articulos.stock',
+            'articulos.nombre', 'categorias.nombre as nombre_categoria','articulos.costo',
+            'articulos.precio','articulos.stock','articulos.isv','articulos.tipoisv', 'isv.impuesto as tipo_isv',
              'articulos.descripcion', 'articulos.estado')->orderBy('articulos.id','desc')->paginate(10);
             
         }else{
-
             $articulos = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
+            ->join('isv','articulos.tipoisv','=','isv.id')
             ->select('articulos.id','articulos.idcategoria','articulos.codigo',
-            'articulos.nombre', 'categorias.nombre as nombre_categoria',
-            'articulos.precio','articulos.stock',
+            'articulos.nombre', 'categorias.nombre as nombre_categoria','articulos.costo',
+            'articulos.precio','articulos.stock','articulos.isv','articulos.tipoisv', 'isv.impuesto as tipo_isv',
              'articulos.descripcion', 'articulos.estado')->where('articulos.'.$criterio, 'like', '%'. $buscar .'%')
              ->orderBy('articulos.id','desc')->paginate(10);
 
@@ -59,6 +60,7 @@ class ArticuloController extends Controller
        
         if($buscar==''){
             $articulos = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
+          
             ->select('articulos.id','articulos.idcategoria','articulos.codigo',
             'articulos.nombre', 'categorias.nombre as nombre_categoria',
             'articulos.precio','articulos.stock',
@@ -146,8 +148,11 @@ class ArticuloController extends Controller
         $articulo->idcategoria = $request->idcategoria;
         $articulo->codigo = $request->codigo;
         $articulo->nombre = $request->nombre;
+        $articulo->costo = $request->costo;
         $articulo->precio = $request->precio;
         $articulo->stock = $request->stock;
+        $articulo->isv = $request->isv;
+        $articulo->tipoisv = $request->tipoisv;
         $articulo->descripcion = $request->descripcion;
         $articulo->estado = '1';
         $articulo->save();
@@ -165,8 +170,11 @@ class ArticuloController extends Controller
         $articulo->idcategoria = $request->idcategoria;
         $articulo->codigo = $request->codigo;
         $articulo->nombre = $request->nombre;
+        $articulo->costo = $request->costo;
         $articulo->precio = $request->precio;
         $articulo->stock = $request->stock;
+        $articulo->isv = $request->isv;
+        $articulo->tipoisv = $request->tipoisv;
         $articulo->descripcion = $request->descripcion;
         $articulo->estado = '1';
         $articulo->save();

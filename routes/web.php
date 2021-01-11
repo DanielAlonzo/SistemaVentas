@@ -89,6 +89,9 @@ Route::group(['middleware'=>['auth']],function(){
 
         Route::get('/descuento', 'DescuentoController@index');
         Route::get('/descuento/seleccionarDescuento','DescuentoController@seleccionarDescuento');
+        Route::get('/descuento/buscarDescuentoVenta','DescuentoController@buscarDescuentoVenta');
+
+        Route::get('/isv/seleccionarIsv','IsvController@seleccionarIsv');
 
         Route::get('/salida', 'SalidaController@index');
 

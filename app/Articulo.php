@@ -8,9 +8,12 @@ class Articulo extends Model
 {
     //
     protected $fillable =[
-        'idcategoria', 'codigo', 'nombre', 'precio', 'stock', 'descripcion', 'estado'
+        'idcategoria', 'codigo', 'nombre','costo', 'precio', 'stock','isv','tipoisv', 'descripcion', 'estado'
     ];
     public function categoria(){
         return $this->belongsTo('App\Categoria');
+    }
+    public function isv(){
+        return $this->belongsTo('App\Isv');
     }
 }

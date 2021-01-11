@@ -46,4 +46,16 @@ class DescuentoController extends Controller
 
         return ['descuentos' => $descuentos];
     }
+
+    public function buscarDescuentoVenta(Request $request){
+        if (!$request->ajax()) return redirect('/');
+
+        $filtro = $request->filtro;
+        $descuentos = Descuento::where('id','=', $filtro)
+        ->select('id','tipodescuento', 'valor')
+       
+        ->orderBy('tipodescuento', 'asc')->take(1)->get();
+
+        return ['descuentos' => $descuentos];
+    }
 }

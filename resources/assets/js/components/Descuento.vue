@@ -31,7 +31,7 @@
                                     <th>Usuario</th>
                                     <th>Descuento</th>
                                     <th>Valor</th>
-                                    <th>Opciones</th>
+                                 
                                     
                                 </tr>
                             </thead>

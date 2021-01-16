@@ -117,6 +117,14 @@ class UserController extends Controller
         }
     }
 
+    public function seleccionarUser(Request $request){
+        if(!$request->ajax())return redirect('/');
+
+        $usuarios = User::where('condicion', '=', '1')
+        ->select('id','usuario')->orderBy('id', 'asc')->get();
+
+        return ['usuarios' => $usuarios];
+    }
     public function desactivar(Request $request)
     {
         if(!$request->ajax())return redirect('/');

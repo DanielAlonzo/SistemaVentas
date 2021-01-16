@@ -8,11 +8,12 @@ class Venta extends Model
 {
     //
     protected $fillable = [
-        'idcliente',
         'idusuario',
-        'tipo_comprobante',
-        'serie_comprobante',
-        'num_comprobante',
+        'idcliente',
+        'num_factura',
+        'num_exonerada',
+        'num_exenta',
+        'num_sag',
         'fecha_hora',
         'impuesto',
         'total',

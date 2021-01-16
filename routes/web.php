@@ -21,7 +21,8 @@ Route::group(['middleware'=>['guest']],function(){
 });
 
 Route::group(['middleware'=>['auth']],function(){
-    
+
+    //Route::get('/dashboard', 'DashboardController');
     Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
     
     Route::get('/main', function () {
@@ -72,6 +73,8 @@ Route::group(['middleware'=>['auth']],function(){
         Route::get('/articulo/listarArticulo', 'ArticuloController@listarArticulo');
         Route::get('/articulo/buscarArticuloVenta', 'ArticuloController@buscarArticuloVenta');
         Route::get('/articulo/listarArticuloVenta', 'ArticuloController@listarArticuloVenta');
+        Route::get('/articulo/seleccionarArticulo', 'ArticuloController@seleccionarArticulo');
+        Route::get('/articulo/listarPDF', 'ArticuloController@listarPDF')->name('articulos_pdf');
 
         Route::get('/proveedor', 'ProveedorController@index');
         Route::post('/proveedor/registrar', 'ProveedorController@store');
@@ -103,6 +106,7 @@ Route::group(['middleware'=>['auth']],function(){
         Route::put('/user/actualizar', 'UserController@update');
         Route::put('/user/desactivar', 'UserController@desactivar');
         Route::put('/user/activar', 'UserController@activar');
+        Route::get('/user/seleccionarUser', 'UserController@seleccionarUser');
 
 
         Route::get('/ingreso', 'IngresoController@index');
@@ -116,6 +120,9 @@ Route::group(['middleware'=>['auth']],function(){
         Route::put('/venta/desactivar', 'VentaController@desactivar');
         Route::get('/venta/obtenerCabecera', 'VentaController@obtenerCabecera');
         Route::get('/venta/obtenerDetalles', 'VentaController@obtenerDetalles');
+        Route::get('/venta/seleccionarNFactura', 'VentaController@seleccionarNFactura');
+        Route::post('/venta/registrarDetalle', 'VentaController@storeDetalle');
+        Route::get('/venta/pdf/{id}', 'VentaController@pdf')->name('venta_pdf');
     // });
 
 });

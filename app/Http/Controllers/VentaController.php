@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Venta;
 use App\DetalleVenta;
+use App\DatoVenta;
 
 class VentaController extends Controller
 {
@@ -18,19 +19,19 @@ class VentaController extends Controller
         $criterio = $request->criterio;
         
         if ($buscar==''){
-            $ventas = Venta::join('personas','ventas.idcliente','=','personas.id')
+            $ventas = Venta::join('clientes','ventas.idcliente','=','clientes.id')
             ->join('users','ventas.idusuario','=','users.id')
-            ->select('ventas.id','ventas.tipo_comprobante','ventas.serie_comprobante',
-            'ventas.num_comprobante','ventas.fecha_hora','ventas.impuesto','ventas.total',
-            'ventas.estado','personas.nombre', 'personas.num_documento','users.usuario')
+            ->select('ventas.id','ventas.num_factura','ventas.num_exonerada',
+            'ventas.num_exenta','ventas.num_sag','ventas.fecha_hora','ventas.impuesto','ventas.total',
+            'ventas.estado','clientes.nombre', 'clientes.num_documento','users.usuario')
             ->orderBy('ventas.id', 'desc')->paginate(10);
         }
         else{
-            $ventas = Venta::join('personas','ventas.idcliente','=','personas.id')
+            $ventas = Venta::join('clientes','ventas.idcliente','=','clientes.id')
             ->join('users','ventas.idusuario','=','users.id')
-            ->select('ventas.id','ventas.tipo_comprobante','ventas.serie_comprobante',
-            'ventas.num_comprobante','ventas.fecha_hora','ventas.impuesto','ventas.total',
-            'ventas.estado','personas.nombre', 'personas.num_documento','users.usuario')
+            ->select('ventas.id','ventas.num_factura','ventas.num_exonerada',
+            'ventas.num_exenta','ventas.num_sag','ventas.fecha_hora','ventas.impuesto','ventas.total',
+            'ventas.estado','clientes.nombre', 'clientes.num_documento','users.usuario')
             ->where('ventas.'.$criterio, 'like', '%'. $buscar . '%')->orderBy('ventas.id', 'desc')->paginate(10);
         }
         
@@ -51,15 +52,55 @@ class VentaController extends Controller
         if (!$request->ajax()) return redirect('/');
 
         $id = $request->id;
-        $venta = Venta::join('personas','ventas.idcliente','=','personas.id')
+        $venta = Venta::join('clientes','ventas.idcliente','=','clientes.id')
         ->join('users','ventas.idusuario','=','users.id')
-        ->select('ventas.id','ventas.tipo_comprobante','ventas.serie_comprobante',
-        'ventas.num_comprobante','ventas.fecha_hora','ventas.impuesto','ventas.total',
-        'ventas.estado','personas.nombre', 'personas.num_documento','users.usuario')->where('ventas.id', '=', $id)
+        ->select('ventas.id','ventas.num_factura','ventas.num_exonerada',
+        'ventas.num_exenta','ventas.num_sag','ventas.fecha_hora','ventas.impuesto','ventas.total',
+        'ventas.estado','clientes.nombre', 'clientes.num_documento','users.usuario')->where('ventas.id', '=', $id)
         ->orderBy('ventas.id', 'desc')->take(1)->get();
         
         
         
+        return ['venta' => $venta];
+    }
+    public function pdf(Request $request, $id){
+
+        //where('condicion', '=', '1')
+        $dato = DatoVenta::join('users','datos_ventas.idusuario','=','users.id')
+        ->select('datos_ventas.id','datos_ventas.cai','datos_ventas.segmentos','datos_ventas.rango_inicial',
+        'datos_ventas.rango_final','datos_ventas.fecha_final_emision','users.usuario')->where('datos_ventas.condicion', '=', '1')->orderBy('id', 'asc')->get();
+
+        $venta = Venta::join('clientes','ventas.idcliente','=','clientes.id')
+        ->join('users','ventas.idusuario','=','users.id')
+        ->select('ventas.id','ventas.num_factura','ventas.num_exonerada',
+        'ventas.num_exenta','ventas.num_sag','ventas.created_at','ventas.impuesto','ventas.total',
+        'ventas.estado','clientes.nombre', 'clientes.num_documento','users.usuario')->where('ventas.id', '=', $id)
+        ->orderBy('ventas.id', 'desc')->take(1)->get();
+
+        $detalles = DetalleVenta::join('articulos','detalle_ventas.idarticulo','=','articulos.id')
+        ->join('descuentos','detalle_ventas.descuento','=','descuentos.id')
+        ->select('detalle_ventas.cantidad','detalle_ventas.precio','articulos.nombre as articulo', 
+        'descuentos.valor', 'detalle_ventas.exonerado','detalle_ventas.exento', 'detalle_ventas.gravado_quince', 
+        'detalle_ventas.gravado_dieciocho')
+        ->where('detalle_ventas.idventa', '=', $id)
+        ->orderBy('detalle_ventas.id', 'desc')->get();
+
+        $numventa=Venta::select('num_factura')->where('id',$id)->get();
+
+        $pdf = \PDF::loadView('pdf.venta',['dato'=>$dato,'venta'=>$venta, 'detalles'=>$detalles]);
+        return $pdf->download('venta-'.$numventa[0]->num_factura.'.pdf');
+    }
+    public function seleccionarNFactura(Request $request){
+        if(!$request->ajax())return redirect('/');
+
+      //  $venta = Venta::whereHas('num_factura')->get()->last();
+       // $venta = Venta::select('num_factura')->orderBy('id','desc')->limit('1');
+        $venta = Venta::orderBy('num_factura', 'asc')->limit('1');
+      //SELECT num_documento FROM clientes ORDER BY ID DESC LIMIT 1
+      //$last_cost = Costs::whereHas('material')->get()->last();
+
+      //insert into ventas values ((select max(idc) from tablaX) + 1, valorParaIdCat, valorParaCampoX);
+
         return ['venta' => $venta];
     }
     public function obtenerDetalles(Request $request){
@@ -90,38 +131,66 @@ class VentaController extends Controller
             $venta = new Venta();
             $venta->idcliente = $request->idcliente;
             $venta->idusuario = \Auth::user()->id;
-            $venta->tipo_comprobante = $request->tipo_comprobante;
-            $venta->serie_comprobante = $request->serie_comprobante;
-            $venta->num_comprobante = $request->num_comprobante;
-            $venta->cai = $request->cai;
-            $venta->rango = $request->rango;
+            $venta->num_factura = $request->num_factura;
+            $venta->num_exonerada = $request->num_exonerada;
+            $venta->num_exenta = $request->num_exenta;
+            $venta->num_sag = $request->num_sag;
             $venta->fecha_hora = $mytime->toDateString();
             $venta->impuesto = $request->impuesto;
             $venta->total = $request->total;
             $venta->estado = 'Registrado';
             $venta->save();
 
-            $detalles = $request->data;//Array de detalles
-            //Recorro todos los elementos
+            // $detalles = $request->data;//Array de detalles
+            // //Recorro todos los elementos
 
-            foreach($detalles as $ep=>$det)
-            {
-                $detalle = new DetalleVenta();
-                $detalle->idventa = $venta->id;
-                $detalle->idarticulo = $det['idarticulo'];
-                $detalle->cantidad = $det['cantidad'];
-                $detalle->precio = $det['precio'];
-                $detalle->descuento = $det['descuento'];    
-                $detalle->exento = $det['exento'];
-                $detalle->grabado_quince = $det['grabado_quince'];
-                $detalle->grabado_dieciocho = $det['grabado_dieciocho'];      
-                $detalle->save();
-            }          
+            // foreach($detalles as $ep=>$det)
+            // {
+            //     $detalle = new DetalleVenta();
+            //     $detalle->idventa = $venta->id;
+            //     $detalle->idarticulo = $det['idarticulo'];
+            //     $detalle->cantidad = $det['cantidad'];
+            //     $detalle->precio = $det['precio'];
+            //     $detalle->descuento = $det['descuento'];    
+            //     $detalle->exonerado = $det['exonerado'];
+            //     $detalle->exento = $det['exento'];
+            //     $detalle->grabado_quince = $det['grabado_quince'];
+            //     $detalle->grabado_dieciocho = $det['grabado_dieciocho'];      
+            //     $detalle->save();
+            // }          
 
             DB::commit();
+            return ['id' => $venta->id];
         } catch (Exception $e){
             DB::rollBack();
         }
+    }
+    public function storeDetalle(Request $request)
+    {
+        if (!$request->ajax()) return redirect('/');
+
+        
+    
+            DB::beginTransaction();
+            $venta = new Venta();
+            $detalle = new DetalleVenta();
+            $detalle->idventa  = $venta->id;
+            $detalle->idarticulo = $request->idarticulo;
+            $detalle->cantidad = $request->cantidad;
+            $detalle->precio =  $request->precio;
+            $detalle->descuento = $request->descuento;
+            $detalle->exonerado = $request->exonerado;
+            $detalle->exento = $request->exento;
+            $detalle->grabado_quince = $request->grabado_quince;
+            $detalle->grabado_dieciocho = $request->grabado_dieciocho;
+           
+            $detalle->save();
+
+                   
+            DB::commit();
+
+        
+        
     }
 
     public function desactivar(Request $request)

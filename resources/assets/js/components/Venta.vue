@@ -12,6 +12,7 @@
                         <button type="button" @click="mostrarDetalle()" class="btn btn-info">
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
+                        
                     </div>
                     <!-- Listado-->
                     <template v-if="listado==1">
@@ -20,8 +21,8 @@
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <select class="form-control col-md-3" v-model="criterio">
-                                      <option value="tipo_comprobante">Tipo Comprobante</option>
-                                      <option value="num_comprobante">Número Comprobante</option>
+                                      <option value="num_factura">Número de Factura</option>
+                                      <option value="estado">Estado</option>
                                       <option value="fecha_hora">Fecha-Hora</option>
                                     </select>
                                     <input type="text" v-model="buscar" @keyup.enter="listarVenta(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
@@ -36,12 +37,13 @@
                                         
                                         <th>Usuario</th>
                                         <th>Cliente</th>
-                                        <th>Tipo Comprobante</th>
-                                        <th>Serie Comprobante</th>
-                                        <th>Número Comprobante</th>
+                                        <th>N° Factura</th>
+                                        <th>N° Compra Exonerada</th>
+                                        <th>N° Compra Exenta</th>
+                                        <th>N° Registro SAG</th>
                                         <th>Fecha Hora</th>
-                                        <th>Total</th>
                                         <th>Impuesto</th>
+                                        <th>Total</th>
                                         <th>Estado</th>
                                         <th>Opciones</th>
                                     </tr>
@@ -51,16 +53,20 @@
                                         
                                         <td v-text="venta.usuario"></td>
                                         <td v-text="venta.nombre"></td>
-                                        <td v-text="venta.tipo_comprobante"></td>
-                                        <td v-text="venta.serie_comprobante"></td>
-                                        <td v-text="venta.num_comprobante"></td>
+                                        <td v-text="venta.num_factura"></td>
+                                        <td v-text="venta.num_exonerada"></td>
+                                        <td v-text="venta.num_exenta"></td>
+                                        <td v-text="venta.num_sag"></td>
                                         <td v-text="venta.fecha_hora"></td>
-                                        <td v-text="venta.total"></td>
                                         <td v-text="venta.impuesto"></td>
+                                        <td v-text="venta.total"></td>
                                         <td v-text="venta.estado"></td>
                                         <td>
                                             <button type="button" @click="verVenta(venta.id)" class="btn btn-success btn-sm">
                                             <i class="icon-eye"></i>
+                                            </button> &nbsp;
+                                            <button type="button" @click="pdfVenta(venta.id)" class="btn btn-info btn-sm">
+                                            <i class="icon-doc"></i>
                                             </button> &nbsp;
                                             <template v-if="venta.estado=='Registrado'">
                                                 <button type="button" class="btn btn-danger btn-sm" @click="desactivarVenta(venta.id)">
@@ -107,47 +113,34 @@
                                     </v-select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <label for="">Impuesto</label>
-                                <label style="color:red">*</label>
-                                <!-- <input type="text" class="form-control" v-model="impuesto"> -->
-
-                                <select class="form-control" v-model="impuesto">
-                                            <option value="0" disabled>
-                                                Seleccionar
-                                            </option>
-                                            <option >
-                                                0.15
-                                            </option>
-                                            <option>
-                                                0.18
-                                            </option>
-                                            
-                                        </select>
+                              <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>N° Factura  </label>
+                                    
+                                   <input type="text"    class="form-control" v-model="num_factura">
+                                </div>
                             </div>
+                           
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>Tipo Comprobante</label>
-                                    <label style="color:red">*</label>
-                                    <select class="form-control" v-model="tipo_comprobante">
-                                        <option value="0" disabled>Seleccione</option>
-                                        
-                                        <option value="FACTURA">Factura</option>
-                                        <option value="TICKET">Ticket</option>
-                                    </select>
+                                    <label>N° Compra Exonerada  <input type="radio"   id="si" name="si" v-model="exon_actived" value="1" ></label>
+                                    
+                                   <input type="text"   id="exoneradaInp" class="form-control" v-model="num_exonerada" v-if="exon_actived==1">
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>Serie Comprobante</label>
-                                    <input type="text" class="form-control" v-model="serie_comprobante" >
+                                   
+                                    <label>N° Compra Exenta <input type="radio"   id="si" name="si" v-model="exon_actived" value="2" ></label>
+                                     
+                                    <input type="text"   class="form-control" v-model="num_exenta" v-if="exon_actived==2" >
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>Número Comprobante</label>
+                                    <label>N° Registro SAG</label>
                                     <label style="color:red">*</label>
-                                    <input type="text" class="form-control" v-model="num_comprobante" placeholder="000xx">
+                                    <input type="text" class="form-control" v-model="num_sag" >
                                 </div>
                             </div>
 
@@ -166,65 +159,56 @@
                                     <div class="form-inline">
                                         <input type="text" class="form-control" v-model="codigo" @keyup.enter="buscarArticulo()" placeholder="Ingrese artículo">
                                         <button @click="abrirModal()" class="btn btn-primary">...</button>
-                                        <input type="text" readonly class="form-control" v-model="articulo">
+                                        <input type="text" style="visibility:hidden" readonly class="form-control" v-model="articulo">
                                     </div>                                         
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Precio <span style="color:red" v-show="precio==0">(Ingrese precio*)</span></label>
-                                    <input type="number" value="0" step="any" class="form-control" v-model="precio">
+                                    <!-- <label>Precio <span style="color:red" v-show="precio==0">(Ingrese precio*)</span></label> -->
+                                    <input type="number" style="visibility:hidden" value="0" step="any" class="form-control" v-model="precio">
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-1">
                                 <div class="form-group">
-                                    <label>Cantidad <span style="color:red" v-show="cantidad==0">(Ingrese cantidad*)</span></label>
-                                    <input type="number" value="0" class="form-control" v-model="cantidad">
+                                    <!-- <label>Cantidad <span style="color:red " v-show="cantidad==0">(Ingrese cantidad*)</span></label> -->
+                                    <input type="number" style="visibility:hidden" value="0" class="form-control" v-model="cantidad">
                                 </div>
                             </div>
-                        
+                             <div class="col-md-1">
+                                <!-- <label for="">Impuesto</label> -->
+                                <!-- <label style="color:red">*</label> -->
+                                <input type="text" style="visibility:hidden" class="form-control" v-model="tipo_isv">
+
+                                
+                            </div>
+                              <div class="col-md-1">
+                                <div class="form-group">
+                                    <!-- <label>Tipo Descuento</label> -->
+                                     <input type="text" style="visibility:hidden" class="form-control" v-model="tdescuento">
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                 <div class="form-group">
+                                       <!-- <label>Valor Descuento</label> -->
+                                      <input type="number" style="visibility:hidden" value="0" step="any" class="form-control" v-model="valor" >
+                                 </div>
+                             </div>
+                             <div class="col-md-2">
+                                <div class="form-group">
+                                    <button @click="agregarDetalle()" style="visibility:hidden" class="btn btn-success form-control btnagregar"><i class="icon-plus"></i></button>
+                                </div>
+                            </div>
                             
                         </div>
 
-                        <div class="form-group row border">
+                        <!-- <div class="form-group row border">
                              
-                                <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Tipo Descuento</label>
-                                     <select class="form-control" v-model="iddescuento" >
-                                            <option value="0" disabled>
-                                                Seleccionar descuento
-                                            </option>
-                                            <option  v-for="descuento in arrayDescuento" :key="descuento.id" :value="descuento.id" v-text="descuento.tipodescuento" @click="buscarDescuento()" ></option>
-                                        </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                 <div class="form-group">
-                                       <label>Valor Descuento</label>
-                                      <input type="number" value="0" step="any" class="form-control" v-model="valor" >
-                                 </div>
-                             </div>
-                            <div class="col-md-2">
-                                 <div class="form-group">
-                                      <label>N° Compra exonerada</label>
-                                      <input type="text" value="0" class="form-control" placeholder="Compra exonerada">
-                                 </div>
-                             </div>
+                              
+                           
 
-                             <div class="col-md-2">
-                                 <div class="form-group">
-                                      <label>N° Compra exenta</label>
-                                      <input type="text" value="0" class="form-control" placeholder="Compra exenta">
-                                 </div>
-                             </div>
-
-                             <div class="col-md-2">
-                                <div class="form-group">
-                                    <button @click="agregarDetalle()" class="btn btn-success form-control btnagregar"><i class="icon-plus"></i></button>
-                                </div>
-                            </div>
-                        </div>
+                             
+                        </div> -->
                         <div class="form-group row border">
                             <div class="table-responsive col-md-12">
                                 <table class="table table-bordered table-striped table-sm">
@@ -235,9 +219,8 @@
                                             <th>Precio</th>
                                             <th>Cantidad</th>
                                             <th>Descuento</th>
-                                            <th>Impuesto</th>
-                                            <th>Exonerado</th>
-                                            <th>Exento</th>
+                                            <th >Impuesto</th>
+                                           
                                             <th>Subtotal</th>
                                         </tr>
                                     </thead>
@@ -260,20 +243,13 @@
                                             </td>
                                             <td>
                                                 
-                                                <input v-model="detalle.descuento" type="number"  class="form-control">
+                                                <input v-model="detalle.tdescuento" type="number"  class="form-control">
                                             </td>
                                               <td>
                                                 
-                                                <input v-model="detalle.impuesto" type="number"  class="form-control">
+                                                <input v-model="detalle.tipo_isv" type="number"  class="form-control">
                                             </td>
-                                            <td>
-                                                
-                                                <input v-model="detalle.exonerado" type="number"  class="form-control">
-                                            </td>
-                                              <td>
-                                                
-                                                <input v-model="detalle.exento" type="number"  class="form-control">
-                                            </td>
+                                           
                                             <td>
                                                 {{detalle.precio*detalle.cantidad}}
                                             </td>
@@ -281,57 +257,62 @@
                                         <!-- TODO: Arreglar esto! solo sera texto, NO OLVIDAR AGREGAR EL 'V-FOR' PARA QUE FUNCIONE  -->
                                         <!-- FIXME:  -->
                                         <tr  style="background-color: #b0e5f5;">
-                                            <td colspan="8" align="right"><strong>Descuento:</strong></td>
+                                            <td colspan="6" align="right"><strong>Descuento:</strong></td>
                                             <td>
-                                                <span style="color:red;" v-show="descuento>0.50">Descuento Inválido </span>
-                                                <input v-model="descuento" type="number"  class="form-control">
+                                                <!-- <span style="color:red;" v-show="descuento>0.50">Descuento Inválido </span> -->
+                                                <!-- <input v-model="descuento" type="number"  class="form-control"> -->
+                                                {{this.descuento=(calcularDescuento).toFixed(2)}}
                                             </td>
 
                                             
                                         </tr> 
                                          <!-- FIXME:  -->
                                         <tr  style="background-color: #b0e5f5;">
-                                            <td colspan="8" align="right"><strong>Importe Exonerado:</strong></td>
+                                            <td colspan="6" align="right"><strong>Importe Exonerado:</strong></td>
                                             <td>
-                                                <input  type="number"  class="form-control">
+                                                <!-- <input  type="number"  class="form-control"> -->
+                                                {{this.exonerado=(calcularExonerado).toFixed(2)}}
                                             </td>
                                         </tr> 
                                              <!-- FIXME:  -->
                                         <tr style="background-color: #b0e5f5;">
-                                            <td colspan="8" align="right"><strong>Importe Exento:</strong></td>
+                                            <td colspan="6" align="right"><strong>Importe Exento:</strong></td>
                                              <td>
-                                                <input  type="number"  class="form-control">
+                                                <!-- <input  type="number"  class="form-control"> -->
+                                                {{this.exento=(calcularExento).toFixed(2)}}
                                             </td>
                                         </tr>  
                                              <!-- FIXME:  -->
                                         <tr style="background-color: #b0e5f5;">
-                                                <td colspan="8" align="right"><strong>Gravado 15%:</strong></td>                                        
+                                                <td colspan="6" align="right"><strong>Gravado 15%:</strong></td>                                        
                                             <td>
-                                                <input  type="number"  class="form-control">
+                                                <!-- <input  type="number"  class="form-control"> -->
+                                                {{this.gravado_quince=(calcularGravado15).toFixed(2)}}
                                             </td>
                                         </tr>
                                              <!-- FIXME:  -->
                                         <tr style="background-color: #b0e5f5;"> 
-                                            <td colspan="8" align="right"><strong>Gravado 18%:</strong></td>
+                                            <td colspan="6" align="right"><strong>Gravado 18%:</strong></td>
                                             <td>
-                                                <input  type="number"  class="form-control">
+                                                <!-- <input  type="number"  class="form-control"> -->
+                                                {{this.gravado_dieciocho=(calcularGravado18).toFixed(2)}}
                                             </td>
                                             
                                         </tr>
                                        <!-- FIXME: ARREGLAR ESTOS TOTALES -->
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="8" align="right"><strong>Total Parcial:</strong></td>
-                                            <td>L. {{totalParcial=((calcular-(calcular*descuento))-totalImpuesto).toFixed(2)}}</td>
+                                            <td colspan="6" align="right"><strong>Total Parcial:</strong></td>
+                                            <td>L. {{totalParcial=(calcular).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
                                             
-                                            <td colspan="8" align="right"><strong>Total Impuesto:</strong></td>
+                                            <td colspan="6" align="right"><strong>Total Impuesto:</strong></td>
                                             
-                                            <td >L. {{totalImpuesto=(calcular*impuesto).toFixed(2)}}</td>
+                                            <td >L. {{impuesto=(calcularImpuesto).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="8" align="right"><strong>Total Neto:</strong></td>
-                                            <td>L. {{(total=(((calcular-(calcular*descuento))-totalImpuesto)+(calcular*impuesto))).toFixed(2)}}</td>
+                                            <td colspan="6" align="right"><strong>Total Neto:</strong></td>
+                                            <td>L. {{(total=((calcular-calcularDescuento)+(calcularImpuesto))).toFixed(2)}}</td>
                                         </tr>
                                     </tbody>  
                                     <tbody v-else>
@@ -345,7 +326,7 @@
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <button type="button" @click="ocultarDetalle()" class="btn btn-danger">Cerrar</button>
-                                <button type="button" class="btn btn-primary" @click="registrarVenta()">Registrar Venta</button>
+                                <button type="button" class="btn btn-primary" @click="registrarVenta() ; registrarDetalle()">Registrar Venta</button>
                             </div>
                         </div>
                     </div>
@@ -494,6 +475,8 @@
                                             <th>Categoría</th>
                                             <th>Precio</th>
                                             <th>Stock</th>
+                                             <th>Descuento</th>
+                                            <th>Impuesto</th>
                                           
                                             <th>Estado</th>
                                             <th>Opciones</th>
@@ -508,6 +491,8 @@
                                             <td v-text="articulo.nombre_categoria"></td>
                                             <td v-text="articulo.precio"></td>
                                             <td v-text="articulo.stock"></td>
+                                            <td v-text="articulo.tdescuento"></td>
+                                            <td v-text="articulo.tipo_isv"></td>
                                           
                                             <td>
                                                 <div v-if="articulo.estado">
@@ -550,6 +535,26 @@
 
     import vSelect from 'vue-select';
 
+    function activarExonerada(){
+                 let me = this;
+
+            //      document.querySelector(".exoneradaChx").addEventListener('change', (event) => {
+            //   if (event.target.checked) {
+            //       document.getElementById('exonerada').disabled=true;
+            //     } else {
+            //         document.getElementById('exonerada').disabled=false;
+            //     }
+            // });
+                if(me.exoneradachx.checked==true){
+                    
+                    me.exoneradaInp.disabled=false;
+
+                }
+                if(me.exoneradachx.checked==false){
+                      me.exoneradaInp.disabled=true;
+                }
+            };
+        
 
     export default {
         data (){
@@ -557,12 +562,19 @@
                 venta_id: 0,
                 idcliente:0,
                 cliente:'',
-                tipo_comprobante : 'Ticket',
-                serie_comprobante : '001-006',
-                num_comprobante : '',
+                num_factura: 0,
+                num_exonerada: 0,
+                num_exenta: 0,
+                exon_actived: 0,
+                num_sag: 0,
                 impuesto: 0.0,
                 total:0.0,
                 totalImpuesto: 0.0,
+                 totalGravado15: 0.0,
+                totalGravado18: 0.0, 
+                totalExento: 0.0,
+                totalExonerado: 0.0,
+                totalDescuento: 0.0,
                 totalParcial: 0.0,
                 arrayVenta : [],
                 arrayCliente:[], 
@@ -584,7 +596,7 @@
                     'to' : 0,
                 },
                 offset : 3,
-                criterio : 'num_comprobante',
+                criterio : 'num_factura',
                 buscar : '',
                 criterioA:'nombre',
                 buscarA:'',
@@ -594,10 +606,14 @@
                 articulo: '',
                 precio: 0,
                 cantidad: 0,
+                tipo_isv:0,
+                tipoisv:0,
                 stock: 0,
                
                 iddescuento: 0,
-                tipodescuento: '',
+                tipodescuento: 0,
+                tipo_descuento: 0,
+                tdescuento: 0,
                 valor: 0,
                 descuento: 0,
                 exonerado: 0,
@@ -650,15 +666,93 @@
                 }return resultado;
             },calcularImpuesto: function(){
                 var resultado = 0.0;
-                // var totalParcial =0.0;//Nuevo
-                // var TotalImpuesto = 0.0;//Nuevo
-               // totalImpuesto= resultado - this.arrayVenta.impuesto;//Nuevo
-               // totalParcial= resultado-(this.arrayDetalle.descuento*100)-totalImpuesto;//Nuevo
-               //(total*impuesto)/(1+impuesto)
+               
+               if(this.exon_actived==1){
+                   resultado=0.0;
+               }else{
+                   for(var i=0; i<this.arrayDetalle.length;i++){
+                    resultado=resultado+((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)*this.arrayDetalle[i].tipo_isv)
+                }
+               }
 
-                for(var i=0; i<this.arrayDetalle.length;i++){
-                    resultado=resultado+(((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)*(this.impuesto))/(1+this.impuesto))
+               return resultado;
+
+            },
+            calcularDescuento: function(){
+                var resultado = 0.0;
+               
+               
+                   for(var i=0; i<this.arrayDetalle.length;i++){
+                    resultado=resultado+((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)*this.arrayDetalle[i].tdescuento)
+                }
+               
+
+               return resultado;
+
+            },
+            calcularExonerado: function(){
+                var resultado = 0.0;
+               
+                 if(this.exon_actived==1){
+                       for(var i=0; i<this.arrayDetalle.length;i++){
+                          resultado=resultado+((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)*this.arrayDetalle[i].tipo_isv)
+                         }
+                   
+               }else{
+                  
+                   resultado=0.0;
+                
+               }
+
+               return resultado;
+
+            },
+            calcularGravado15: function(){
+                var resultado = 0.0;
+               
+                 if(this.exon_actived==1){
+                   resultado=0.0;
+               }else{
+                   for(var i=0; i<this.arrayDetalle.length;i++){
+                   if(this.arrayDetalle[i].tipo_isv==0.15){
+                        // resultado=resultado+((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)-((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)*this.arrayDetalle[i].tipo_isv))
+                         resultado=resultado+(this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)
+                   }
+                   
+                }
+               }
+
+               return resultado;
+
+            },
+            calcularGravado18: function(){
+                var resultado = 0.0;
+               
+                if(this.exon_actived==1){
+                   resultado=0.0;
+               }else{
+                   for(var i=0; i<this.arrayDetalle.length;i++){
+                   if(this.arrayDetalle[i].tipo_isv==0.18){
+                        //resultado=resultado+((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)-((this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)*this.arrayDetalle[i].tipo_isv))
+                          resultado=resultado+(this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)
+                   }
+                   
+                }
+               }
+               return resultado;
+
+            },
+             calcularExento: function(){
+                var resultado = 0.0;
+               
+
+               for(var i=0; i<this.arrayDetalle.length;i++){
+                   if(this.arrayDetalle[i].tipo_isv==0.0){
+                        resultado=resultado+(this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)
+                   }
+                   
                 }return resultado;
+
             },
             calcular: function(){
                 var resultado = 0.0;
@@ -671,6 +765,10 @@
                     resultado=resultado+(this.arrayDetalle[i].precio*this.arrayDetalle[i].cantidad)
                 }return resultado;
             },
+            // buscarYagregar:function(){
+            //     this.buscarArticulo();
+            //     this.agregarDetalle();
+            // },
         },
         methods : {
             listarVenta (page,buscar,criterio){
@@ -700,6 +798,9 @@
                     console.log(error);
                 });
             },
+            pdfVenta(id){
+               window.open('http://localhost:8000/venta/pdf/'+id+','+'_blank'); 
+            },
             seleccionarDescuento(){
                   let me=this;
                 var url= '/descuento/seleccionarDescuento';
@@ -713,6 +814,19 @@
                     console.log(error);
                 });
             },
+            //   seleccionarNFactura(){
+            //       let me=this;
+            //     var url= '/venta/seleccionarNFactura';
+            //     axios.get(url).then(function (response) {
+            //         var respuesta= response.data;
+            //         me.num_factura = respuesta.venta;
+                    
+            //         //console.log(response);
+            //     })
+            //     .catch(function (error) {
+            //         console.log(error);
+            //     });
+            // },
             getDatosCliente(val1){
                 let me = this;
                 me.loading = true;
@@ -730,12 +844,18 @@
                         me.articulo=me.arrayArticulo[0]['nombre'];
                         me.idarticulo=me.arrayArticulo[0]['id'];
                         me.precio=me.arrayArticulo[0]['precio'];
+                        me.tipoisv=me.arrayArticulo[0]['tipoisv'];
+                        me.tipo_isv=me.arrayArticulo[0]['tipo_isv'];
+                        me.tipodescuento=me.arrayArticulo[0]['tipodescuento'];
+                        me.tdescuento=me.arrayArticulo[0]['tdescuento'];
+                         
                         me.stock=me.arrayArticulo[0]['stock'];
                     }
                     else{
                         me.articulo='No existe artículo';
                         me.idarticulo=0;
                     }
+                    me.agregarDetalle();
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -785,7 +905,7 @@
 
             agregarDetalle(){
                 let me = this;
-                if(me.idarticulo == 0 || me.cantidad == 0 || me.precio == 0){
+                if(me.idarticulo == 0 || me.precio == 0){
 
                 }else{
                     if(me.encuentra(me.idarticulo)){
@@ -830,22 +950,31 @@
                             articulo: me.articulo,
                             cantidad: me.cantidad,
                             precio: me.precio,
-                            descuento: me.descuento,
-                            exento: me.exento,
-                            exonerado: me.exonerado,
+                             tipoisv: me.tipoisv,
+                             tipo_isv: me.tipo_isv,
+                             tipodescuento: me.tipodescuento,
+                             tdescuento: me.tdescuento,
+                            // descuento: me.descuento,
+                            // exento: me.exento,
+                            // exonerado: me.exonerado,
                             // gravado_quince: me.gravado_quince,
                             // gravado_dieciocho: me.gravado_dieciocho,
                             stock: me.stock
-                            });
+                              
+                                });
                             me.codigo="";
                             me.idarticulo=0;
                             me.articulo="";
                             me.cantidad=0;
                             me.precio=0;
-                            me.descuento=0;
-                            me.impuesto=0;
-                            me.exento=0;
-                            me.exonerado=0;
+                            me.tipoisv=0;
+                            me.tipo_isv=0;
+                             me.tipodescuento=0;
+                            me.tdescuento=0;
+                            // me.descuento=0;
+                            // me.impuesto=0;
+                            // me.exento=0;
+                            // me.exonerado=0;
                             // me.gravado_quince=0;
                             // me.gravado_dieciocho=0;
                             me.stock=0;
@@ -857,6 +986,13 @@
                 }
 
                 
+            },
+            
+            buscar_agregar(){
+                let me = this;
+
+                me.buscarArticulo();
+                me.agregarDetalle();
             },
             agregarDetalleModal(data = []){
                 let me = this;
@@ -886,7 +1022,9 @@
                             cantidad: 1,
                             precio: data['precio'],
                            // exento: 1
-                           stock: data['stock']
+                           stock: data['stock'],
+                           tipo_isv: data['tipo_isv'],
+                           tdescuento: data['tdescuento']
 
                         });
                     }    
@@ -904,89 +1042,133 @@
                     console.log(error);
                 });
             },
-            registrarIngreso(){
-                if (this.validarIngreso()){
+            registrarVenta(){
+                if (this.validarVenta()){
                     return;
                 }
                 
                 let me = this;
+                   
+                axios.post('/venta/registrar',{
 
-                axios.post('/ingreso/registrar',{
-                    'idproveedor': this.idproveedor,
-                    'tipo_comprobante': this.tipo_comprobante,
-                    'serie_comprobante' : this.serie_comprobante,
-                    'num_comprobante' : this.num_comprobante,
+                    'idcliente': this.idcliente,
+                    'num_factura': this.num_factura,
+                    'num_exonerada' : this.num_exonerada,
+                    'num_exenta' : this.num_exenta,
+                    'num_sag' : this.num_sag,
                     'impuesto' : this.impuesto,
                     'total' : this.total,
-                    'data' : this.arrayDetalle
+                    //'data' : this.arrayDetalle,
 
+                 
                 }).then(function (response) {
+                   // me.registrarDetalle();
                     me.listado=1;
-                    me.listarIngreso(1,'','num_comprobante');
-                    me.idproveedor=0;
-                    me.tipo_comprobante='Ticket';
-                    me.serie_comprobante='001-006';
-                    me.num_comprobante='';
+                    me.listarVenta(1,'','num_factura');
+                    me.idcliente=0;
+                    me.num_factura=0;
+                    me.num_exonerada='';
+                    me.num_exenta='';
+                    me.num_sag='';
                     me.impuesto=0.0;
                     me.total=0.0;
                     me.idarticulo=0;
                     me.articulo='';
                     me.cantidad=0;
                     me.precio=0;
+                    me.stock=0;
+                    me.codigo='';
+                     me.descuento=0;
                   //  me.exento=0;
                     me.arrayDetalle=[];
-
+                     window.open('http://localhost:8000/venta/pdf/'+response.data.id+','+'_blank'); 
+                    
                 }).catch(function (error) {
-                    console.log(error);
+                   // console.log(error);
                 });
             },
-            actualizarPersona(){
-               if (this.validarPersona()){
+            registrarDetalle(){
+
+                if(this.validarVenta()){
                     return;
                 }
-                
                 let me = this;
-
-                axios.put('/user/actualizar',{
-                    'nombre': this.nombre,
-                    'tipo_documento': this.tipo_documento,
-                    'num_documento' : this.num_documento,
-                    'direccion' : this.direccion,
-                    'telefono' : this.telefono,
-                    'email' : this.email,
-                    'idrol' : this.idrol,
-                    'usuario': this.usuario,
-                    'password': this.password,
-                    'id': this.persona_id
+                axios.post('/venta/registrarDetalle', {
+                    'idventa': me.id,
+                    'idarticulo': me.idarticulo,
+                    'cantidad': me.cantidad,
+                    'precio': me.precio,
+                    'descuento': me.descuento,
+                    'exonerado': me.exonerado,
+                      'exento': me.exento,
+                    'gravado_quince': me.gravado_quince,
+                    'gravado_dieciocho': me.gravado_dieciocho
                 }).then(function (response) {
-                    me.cerrarModal();
-                    me.listarPersona(1,'','nombre');
-                }).catch(function (error) {
-                    console.log(error);
-                }); 
+                //    me.listado=1;
+                //     me.listarVenta(1,'','num_factura');
+                })
+                .catch(function (error) {
+                    // handle error
+                    //console.log(error);
+                })
+
             },
-            validarIngreso(){
-                this.errorIngreso=0;
-                this.errorMostrarMsjIngreso =[];
+            // actualizarPersona(){
+            //    if (this.validarPersona()){
+            //         return;
+            //     }
+                
+            //     let me = this;
 
-                if(this.idproveedor==0) this.errorMostrarMsjIngreso.push("Seleccione un proveedor");
-                if(this.tipo_comprobante==0) this.errorMostrarMsjIngreso.push("Seleccione el comprobante");
-                if(this.num_comprobante==0) this.errorMostrarMsjIngreso.push("Seleccione el número de comprobante");
-                if(this.impuesto==0) this.errorMostrarMsjIngreso.push("Seleccione el impuesto de compra");
-                if(this.arrayDetalle.length<=0) this.errorMostrarMsjIngreso.push("Ingrese detalles de la compra");
+            //     axios.put('/user/actualizar',{
+            //         'nombre': this.nombre,
+            //         'tipo_documento': this.tipo_documento,
+            //         'num_documento' : this.num_documento,
+            //         'direccion' : this.direccion,
+            //         'telefono' : this.telefono,
+            //         'email' : this.email,
+            //         'idrol' : this.idrol,
+            //         'usuario': this.usuario,
+            //         'password': this.password,
+            //         'id': this.persona_id
+            //     }).then(function (response) {
+            //         me.cerrarModal();
+            //         me.listarPersona(1,'','nombre');
+            //     }).catch(function (error) {
+            //         console.log(error);
+            //     }); 
+            // },
+            validarVenta(){
+                let me = this;
+                me.errorVenta=0;
+                me.errorMostrarMsjVenta =[];
+                var art;
 
-                if (this.errorMostrarMsjIngreso.length) this.errorIngreso = 1;
+                //Validacion de stock
+                me.arrayDetalle.map(function(x){
+                    if(x.cantidad>x.stock){
+                        art= x.articulo + " con stock insuficiente";
+                        me.errorMostrarMsjVenta.push(art);
+                    }
+                });
 
-                return this.errorIngreso;
+
+                if(me.idcliente==0) me.errorMostrarMsjVenta.push("Seleccione un Cliente");
+      
+                if(me.arrayDetalle.length<=0) me.errorMostrarMsjVenta.push("Ingrese detalles de la venta");
+
+                if (me.errorMostrarMsjVenta.length) me.errorVenta = 1;
+
+                return me.errorVenta;
             },
             mostrarDetalle(){
                 
                 let me = this;
                 me.listado=0;
                 me.idproveedor=0;
-                me.tipo_comprobante='Ticket';
-                me.serie_comprobante='001-006';
-                me.num_comprobante='';
+                // me.tipo_comprobante='Ticket';
+                // me.serie_comprobante='001-006';
+                // me.num_comprobante='';
                 me.impuesto=0.0;
                 me.total=0.0;
                 me.idarticulo=0;
@@ -997,45 +1179,46 @@
                 me.arrayDetalle=[];
 
                 me.seleccionarDescuento();
+               //  me.seleccionarNFactura();
             },
             ocultarDetalle(){
                 this.listado=1;
             },
-            verIngreso(id){
-                let me = this;
-                me.listado=2;
+            // verIngreso(id){
+            //     let me = this;
+            //     me.listado=2;
                 
-                //Ingresos
-                var arrayIngresoTemp=[];
-                var url= '/ingreso/obtenerCabecera?id='+id;
-                axios.get(url).then(function (response) {
-                    var respuesta= response.data;
-                    arrayIngresoTemp = respuesta.ingreso;
-                    me.proveedor = arrayIngresoTemp[0]['nombre'];
-                    me.tipo_comprobante = arrayIngresoTemp[0]['tipo_comprobante'];
-                    me.serie_comprobante = arrayIngresoTemp[0]['serie_comprobante'];
-                    me.num_comprobante = arrayIngresoTemp[0]['num_comprobante'];
-                    me.impuesto = arrayIngresoTemp[0]['impuesto'];
-                    me.total = arrayIngresoTemp[0]['total'];
+            //     //Ingresos
+            //     var arrayIngresoTemp=[];
+            //     var url= '/ingreso/obtenerCabecera?id='+id;
+            //     axios.get(url).then(function (response) {
+            //         var respuesta= response.data;
+            //         arrayIngresoTemp = respuesta.ingreso;
+            //         me.proveedor = arrayIngresoTemp[0]['nombre'];
+            //         me.tipo_comprobante = arrayIngresoTemp[0]['tipo_comprobante'];
+            //         me.serie_comprobante = arrayIngresoTemp[0]['serie_comprobante'];
+            //         me.num_comprobante = arrayIngresoTemp[0]['num_comprobante'];
+            //         me.impuesto = arrayIngresoTemp[0]['impuesto'];
+            //         me.total = arrayIngresoTemp[0]['total'];
                    
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            //     })
+            //     .catch(function (error) {
+            //         console.log(error);
+            //     });
 
-                //Detalles
+            //     //Detalles
 
-                    var urld= '/ingreso/obtenerDetalles?id='+id;
-                axios.get(urld).then(function (response) {
-                    var respuesta= response.data;
-                    me.arrayDetalle = respuesta.detalles;
+            //         var urld= '/ingreso/obtenerDetalles?id='+id;
+            //     axios.get(urld).then(function (response) {
+            //         var respuesta= response.data;
+            //         me.arrayDetalle = respuesta.detalles;
 
                    
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            },
+            //     })
+            //     .catch(function (error) {
+            //         console.log(error);
+            //     });
+            // },
             cerrarModal(){
                 this.modal=0;
                 this.tituloModal='';
@@ -1074,7 +1257,7 @@
                         'id':id
                     }).then(function (response) {
                         
-                        me.listarVenta(1,'','num_comprobante');
+                        me.listarVenta(1,'','num_factura');
                         swalWithBootstrapButtons.fire(
                         'Anulada!',
                         'La venta ha sido anulada.',
@@ -1098,6 +1281,7 @@
         },
         mounted() {
             this.listarVenta(1,this.buscar,this.criterio);
+            // this.activarExonerada();
         }
     }
 </script>

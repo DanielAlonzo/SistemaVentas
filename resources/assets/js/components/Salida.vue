@@ -9,6 +9,9 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="icon-user-following"></i> Salidas
+                        <button type="button" style="margin-left: 10px" @click="abrirModal('salida','registrar')" class="btn btn-info" >
+                            <i class="icon-plus"></i>&nbsp;Nuevo
+                        </button>
                         
                     </div>
                     <div class="card-body">
@@ -17,7 +20,7 @@
                                 <div class="input-group">
                                     <select class="form-control col-md-3" v-model="criterio">
                                       <option value="motivo">Motivo</option>
-                                      <option value="descripcion">Descripción</option>
+                                      
                                     </select>
                                    <input type="text" v-model="buscar" @keyup.enter="listarRol(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
                                     <button type="submit" @click="listarRol(1,buscar,criterio)" class="btn btn-info"><i class="fa fa-search"></i> Buscar</button>
@@ -32,9 +35,10 @@
                                     <th>Artículo</th>
                                     <th>Motivo</th>
                                     <th>Unidades</th>
+                                     <th>Costo</th>
                                     <th>Valor</th>
                                     <th>Fecha y Hora</th>
-                                    <th>Opciones</th>
+                                   
                                     
                                 </tr>
                             </thead>
@@ -45,9 +49,10 @@
                                     <td v-text="salida.idarticulo"></td>
                                     <td v-text="salida.motivo"></td>
                                     <td v-text="salida.unidades"></td>
+                                    <td v-text="salida.costo"></td>
                                      <td v-text="salida.valor"></td>
                                     <td v-text="salida.fecha_hora"></td>
-                                   
+                                  
                                 </tr>
                                 
                             </tbody>
@@ -70,6 +75,90 @@
                     </div>
                 </div>
                 <!-- Fin ejemplo de tabla Listado -->
+                  <!--Inicio del modal agregar/actualizar-->
+            <div class="modal fade"  tabindex="-1" :class="{'mostrar' : modal}" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+                <div class="modal-dialog modal-primary modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" v-text="tituloModal"></h4>
+                            <button type="button" class="close" @click="cerrarModal()" aria-label="Close">
+                              <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Usuario</label>
+                                    <div class="col-md-9">
+                                         <select class="form-control" v-model="idusuario">
+                                            
+                                            <option value="0" disabled>
+                                                Seleccionar
+                                            </option>
+                                            <option v-for="user in arrayUsuario" :key="user.id" :value="user.id" v-text="user.usuario"></option>
+                                        </select>
+                                        
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Articulo</label>
+                                    <div class="col-md-9">
+                                        <select class="form-control" v-model="idarticulo" >
+                                               <option value="0" disabled>
+                                                Seleccionar
+                                                </option>
+                                                <option v-for="articulo in arrayArticulo" :key="articulo.id" :value="articulo.id" v-text="articulo.nombre"></option>
+                                        </select>
+                                        
+                                    </div>
+                                </div>    
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Motivo</label>
+                                    <div class="col-md-9">
+                                        <input type="text" v-model="motivo" class="form-control" placeholder="Motivo de la salida">
+                                        
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Unidades</label>
+                                    <div class="col-md-9">
+                                        <input type="number" v-model="unidades" class="form-control" >
+                                        
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Costo</label>
+                                    <div class="col-md-9">
+                                        <input type="number" v-model="costo"    class="form-control" >
+                                        
+                                    </div>
+                                </div>
+                                 <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="email-input">valor</label>
+                                    <div class="col-md-9">
+                                        <input type="number" v-model="valor" class="form-control" >
+                                        
+                                    </div>
+                                </div>
+                                
+                                <div v-show="errorPersona" class="form-group row div-error">
+                                    <div class="text-center text-error">
+                                        <div v-for="error in errorMostrarMsjPersona" :key="error" v-text="error"></div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button"  class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
+                            <button type="button" style="margin-left: 10px" v-if="tipoAccion==1" class="btn btn-primary" @click="registrarPersona()">Guardar</button>
+                            <button type="button" style="margin-left: 10px" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarPersona()">Actualizar</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!--Fin del modal-->
             </div>
            
      
@@ -86,8 +175,11 @@
                 idarticulo: 0,
                 motivo: '',
                 unidades: 0,
-                valor: 0.0,
+                costo: 0.0,
+                valor: 0,
                 arraySalida :[],
+                arrayUsuario:[],
+                arrayArticulo:[],
                 modal : 0,
                 tituloModal : '',
                 tipoAccion : 0,
@@ -101,7 +193,9 @@
                 },
                 offset : 3,
                 criterio : 'nombre',
-                buscar : ''
+                buscar : '',
+                usuario:'',
+                nombre:''
             }
             
         },
@@ -154,10 +248,86 @@
 
                 me.listarRol(page, buscar, criterio);//visualiza los datos de la pagina enviada
             },
-            
-            
+              seleccionarUsuario(){
+                  let me=this;
+                var url= '/user/seleccionarUser';
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;
+                    me.arrayUsuario = respuesta.usuarios;
+                    
+                    //console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+            seleccionarArticulo(){
+                  let me=this;
+                var url= '/articulo/seleccionarArticulo';
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;
+                    me.arrayArticulo = respuesta.articulos;
+                    
+                    //console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+            abrirModal(modelo, accion, data = []){
+                switch(modelo){
+                    case "salida":{
+                        switch(accion){
+                            case "registrar":
+                                {
+                                    this.modal = 1;
+                                    this.tituloModal = 'Registrar Salida';
+                                    this.idusuario = 0;
+                                    this.idarticulo = 0;
+                                     this.motivo = '';
+                                    this.unidades = 0;
+                                      this.costo = 0;
+                                    this.valor = 0;
+                                    this.tipoAccion = 1
+                                    break;
+                                }
+                            case "actualizar":
+                                {
+                                   // console.log({data});
+                                   this.modal=1;
+                                   this.tituloModal='Actualizar Salida';
+                                   this.tipoAccion=2;
+                                   this.salida_id=data['id'];
+                                   this.idusuario = data['idusuario'];
+                                   this.idarticulo = data['idarticulo'];
+                                   this.motivo = data['motivo'];
+                                   this.unidades = data['unidades'];
+                                   this.costo = data['costo'];
+                                   this.valor = data['valor'];
+                                   break;
+
+                                }    
+                        }
+                    }
+                }
+                this.seleccionarUsuario();
+                this.seleccionarArticulo();
+            },
+             cerrarModal(){
+
+                this.modal = 0;
+                this.tituloModal = '';
+                this.idusuario = 0;
+                this.idarticulo = 0;
+                this.motivo = '';
+                this.unidades = 0;
+                this.costo = 0;
+                this.valor = 0;
+             
+                this.errorPersona = 0;
+            },
            
-            
+          
         },   
            
         mounted() {

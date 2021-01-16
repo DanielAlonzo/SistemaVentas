@@ -16,20 +16,22 @@ class CreateArticulosTable extends Migration
         Schema::create('articulos', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('idcategoria')->unsigned();//llave foranea
-            $table->string('codigo',50)->nullable();//para codigo de barras
+            $table->string('codigo',50)->unique();//para codigo de barras
             $table->string('nombre',100)->unique();
             $table->decimal('costo',11,2);
             $table->decimal('precio',11,2);
             $table->integer('stock');
+            $table->integer('tipodescuento')->unsigned();
             $table->boolean('isv');
             $table->integer('tipoisv')->unsigned();
             $table->string('descripcion',256)->nullable();
-            $table->string('estado')->default(1);
+            $table->boolean('estado')->default(1);
             $table->timestamps();
 
             //relaciones
             $table->foreign('idcategoria')->references('id')->on('categorias');
             $table->foreign('tipoisv')->references('id')->on('isv');
+            $table->foreign('tipodescuento')->references('id')->on('descuentos');
         });
     }
 

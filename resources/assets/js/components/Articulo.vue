@@ -14,6 +14,9 @@
                         <button type="button" style="margin-left: 10px" @click="abrirModal('articulo','registrar')" class="btn btn-info" >
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
+                         <button type="button" style="margin-left: 10px" @click="cargarPDF()" class="btn btn-info" >
+                            <i class="icon-doc"></i>&nbsp;Reporte
+                        </button>
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
@@ -41,6 +44,7 @@
                                     <th>Costo</th>
                                     <th>Precio</th>
                                     <th>Stock</th>
+                                    <th>Descuento</th>
                                     <th>ISV</th>
                                     <th>Descripción</th>
                                     <th>Estado</th>
@@ -57,6 +61,7 @@
                                     <td v-text="articulo.costo"></td>
                                     <td v-text="articulo.precio"></td>
                                     <td v-text="articulo.stock"></td>
+                                    <td v-text="articulo.tipo_descuento"></td>
                                     <td v-text="articulo.tipo_isv"></td>
                                     <td v-text="articulo.descripcion"></td>
                                     <td>
@@ -165,6 +170,19 @@
                                         <input type="number" v-model="stock" class="form-control" placeholder="">
                                     </div>
                                 </div>
+                               <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Tipo Descuento</label>
+                                    <div class="col-md-9">
+                                       
+                                        <select class="form-control" v-model="tipodescuento" >
+                                            <option value="0" disabled>
+                                                Seleccionar
+                                            </option>
+                                            <option v-for="desc in arrayDescuento" :key="desc.id" :value="desc.id" v-text="desc.tipodescuento"></option>
+                                        </select>
+                                        
+                                    </div>
+                                </div>
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="email-input">ISV</label>
                                     <div class="col-md-9">
@@ -236,6 +254,9 @@ import VueBarcode from 'vue-barcode';
                 isv: 1,
                 tipoisv: 0,
                 tipo_isv: 0.0,
+                tipodescuento: 0,
+                tdescuento: 0,
+                tipo_descuento: '',
                 descripcion: '',
                 arrayArticulo :[],
                 modal : 0,
@@ -255,7 +276,8 @@ import VueBarcode from 'vue-barcode';
                 criterio : 'nombre',
                 buscar : '',
                 arrayCategoria:[],
-                arrayIsv:[]
+                arrayIsv:[],
+                arrayDescuento:[]
             }
             
         },
@@ -332,6 +354,22 @@ import VueBarcode from 'vue-barcode';
                     console.log(error);
                 });
             },
+            cargarPDF(){
+                window.open('http://localhost:8000/articulo/listarPDF', '_blank');
+            },
+             seleccionarDescuento(){
+                  let me=this;
+                var url= '/descuento/seleccionarDescuento';
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;
+                    me.arrayDescuento = respuesta.descuentos;
+                    
+                    //console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
             cambiarPagina(page, buscar, criterio){
                 let me = this;
                 me.pagination.current_page = page; //actualiza la pagina actual
@@ -351,6 +389,7 @@ import VueBarcode from 'vue-barcode';
                     'stock': this.stock,
                     'precio': this.precio,
                     'costo': this.costo,
+                     'tipodescuento': this.tipodescuento,
                     'isv': this.isv,
                     'tipoisv': this.tipoisv,
                     'descripcion': this.descripcion
@@ -377,6 +416,7 @@ import VueBarcode from 'vue-barcode';
                     'stock': this.stock,
                     'precio': this.precio,
                     'costo': this.costo,
+                     'tipodescuento': this.tipodescuento,
                     'isv': this.isv,
                     'tipoisv': this.tipoisv,
                     'descripcion': this.descripcion,
@@ -485,9 +525,11 @@ import VueBarcode from 'vue-barcode';
                 this.errorMostrarMsjArticulo = [];
 
                 if(this.idcategoria==0) this.errorMostrarMsjArticulo.push("Seleccione una categoría.");
+                if(this.codigo==0) this.errorMostrarMsjArticulo.push("Inserte un código.");
                 if(!this.nombre) this.errorMostrarMsjArticulo.push("El nombre del artículo no puede estar vacío");
                 if(!this.stock) this.errorMostrarMsjArticulo.push("El stock del artículo debe ser numérico y no puede estar vacío");
                  if(!this.precio) this.errorMostrarMsjArticulo.push("El precio del artículo debe ser numérico y no puede estar vacío");
+                  if(!this.costo) this.errorMostrarMsjArticulo.push("El costo del artículo debe ser numérico y no puede estar vacío");
                 if(this.errorMostrarMsjArticulo.length) this.errorArticulo = 1;
 
                 return this.errorArticulo;
@@ -524,6 +566,7 @@ import VueBarcode from 'vue-barcode';
                                     this.precio=0;
                                     this.costo=0;
                                     this.stock=0;
+                                     this.tipodescuento=0;
                                     this.isv=1;
                                     this.tipoisv=0;
                                     this.descripcion = '';
@@ -542,6 +585,7 @@ import VueBarcode from 'vue-barcode';
                                    this.nombre = data['nombre'];
                                    this.precio=data['precio'];
                                    this.costo=data['costo'];
+                                     this.tipodescuento=data['tipodescuento'];
                                    this.isv=data['isv'];
                                    this.tipoisv=data['tipoisv'];
                                    this.stock=data['stock'];
@@ -554,6 +598,7 @@ import VueBarcode from 'vue-barcode';
                 }
                 this.seleccionarCategoria();
                 this.seleccionarIsv();
+                this.seleccionarDescuento();
             }
         },
         mounted() {
